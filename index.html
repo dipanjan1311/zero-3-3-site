@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zero-3-3 — Montreal</title>
+<meta name="description" content="Zero-3-3 is a Montreal-based band performing Bollywood, English, Bengali, and Telugu music live.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/branding/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/branding/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#top" class="nav-mark"><img src="assets/branding/logo.png" alt="Zero-3-3" class="nav-logo"></a>
+  <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about">About</a></li>
+    <li><a href="#band">The band</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#live">Live</a></li>
+    <li><a href="#contact">Book us</a></li>
+  </ul>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="top">
+  <div class="hero-anim" aria-hidden="true">
+    <div class="hero-reveal">
+
+    <svg class="hero-strike" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
+      <path class="hero-strike-haze" style="--len:478.1; --delay:0s" d="M 500.0,-30.0 L 504.8,-23.8 L 509.6,-17.7 L 503.6,-11.6 L 504.0,-3.1 L 511.3,-1.2 L 518.8,-0.3 L 521.4,6.9 L 525.8,13.1 L 527.0,20.3 L 531.3,26.2 L 532.6,33.3 L 533.1,40.4 L 529.0,47.1 L 521.3,49.0 L 520.2,56.5 L 515.0,62.1 L 513.0,69.0 L 512.5,76.2 L 515.9,82.9 L 522.6,86.3 L 523.6,93.0 L 528.3,97.8 L 532.8,103.5 L 530.6,110.4 L 525.8,115.4 L 524.5,122.2 L 524.7,128.9 L 523.6,135.5 L 523.6,143.1 L 519.7,149.5 L 514.0,154.6 L 506.3,155.0 L 501.4,161.3 L 502.8,169.1 L 510.1,172.8 L 511.2,180.9 L 509.1,187.3 L 506.9,193.6 L 506.5,201.4 L 499.3,204.5 L 503.5,211.1 L 501.1,218.4 L 506.8,222.6 L 513.3,225.3 L 518.1,230.3 L 523.8,234.3 L 520.3,241.2 L 523.6,248.2 L 530.0,252.7 L 536.7,256.7 L 541.9,263.9 L 539.0,272.2 L 538.8,280.0 L 538.6,287.9 L 530.3,290.1 L 526.6,297.9 L 523.3,303.4 L 522.3,309.7 L 521.6,316.9 L 515.2,320.2 L 513.0,326.7 L 506.6,329.3 L 502.5,334.2 L 500.0,340.0"/>
+      <path class="hero-strike-haze sub" style="--len:180.2; --delay:0.30s" d="M 524.5,122.2 L 521.5,132.7 L 515.7,141.9 L 509.9,151.6 L 510.8,162.9 L 503.1,171.4 L 500.4,182.5 L 487.7,183.1 L 481.7,194.3 L 476.4,203.9 L 468.8,211.7 L 466.5,222.3 L 461.9,232.2 L 452.2,237.0 L 443.4,243.4 L 434.6,250.2 L 429.8,260.2"/>
+      <path class="hero-strike-haze sub" style="--len:165.4; --delay:0.42s" d="M 501.1,218.4 L 501.0,229.4 L 492.6,236.3 L 483.1,241.6 L 480.8,252.2 L 476.1,261.1 L 472.0,270.2 L 474.2,280.5 L 470.0,290.2 L 471.0,300.3 L 477.2,308.3 L 480.1,317.7 L 484.9,326.3 L 487.6,335.8 L 489.7,345.6 L 492.7,355.6 L 501.1,361.9"/>
+      <path class="hero-strike-glow" style="--len:478.1; --delay:0s" d="M 500.0,-30.0 L 504.8,-23.8 L 509.6,-17.7 L 503.6,-11.6 L 504.0,-3.1 L 511.3,-1.2 L 518.8,-0.3 L 521.4,6.9 L 525.8,13.1 L 527.0,20.3 L 531.3,26.2 L 532.6,33.3 L 533.1,40.4 L 529.0,47.1 L 521.3,49.0 L 520.2,56.5 L 515.0,62.1 L 513.0,69.0 L 512.5,76.2 L 515.9,82.9 L 522.6,86.3 L 523.6,93.0 L 528.3,97.8 L 532.8,103.5 L 530.6,110.4 L 525.8,115.4 L 524.5,122.2 L 524.7,128.9 L 523.6,135.5 L 523.6,143.1 L 519.7,149.5 L 514.0,154.6 L 506.3,155.0 L 501.4,161.3 L 502.8,169.1 L 510.1,172.8 L 511.2,180.9 L 509.1,187.3 L 506.9,193.6 L 506.5,201.4 L 499.3,204.5 L 503.5,211.1 L 501.1,218.4 L 506.8,222.6 L 513.3,225.3 L 518.1,230.3 L 523.8,234.3 L 520.3,241.2 L 523.6,248.2 L 530.0,252.7 L 536.7,256.7 L 541.9,263.9 L 539.0,272.2 L 538.8,280.0 L 538.6,287.9 L 530.3,290.1 L 526.6,297.9 L 523.3,303.4 L 522.3,309.7 L 521.6,316.9 L 515.2,320.2 L 513.0,326.7 L 506.6,329.3 L 502.5,334.2 L 500.0,340.0"/>
+      <path class="hero-strike-glow sub" style="--len:180.2; --delay:0.30s" d="M 524.5,122.2 L 521.5,132.7 L 515.7,141.9 L 509.9,151.6 L 510.8,162.9 L 503.1,171.4 L 500.4,182.5 L 487.7,183.1 L 481.7,194.3 L 476.4,203.9 L 468.8,211.7 L 466.5,222.3 L 461.9,232.2 L 452.2,237.0 L 443.4,243.4 L 434.6,250.2 L 429.8,260.2"/>
+      <path class="hero-strike-glow sub" style="--len:165.4; --delay:0.42s" d="M 501.1,218.4 L 501.0,229.4 L 492.6,236.3 L 483.1,241.6 L 480.8,252.2 L 476.1,261.1 L 472.0,270.2 L 474.2,280.5 L 470.0,290.2 L 471.0,300.3 L 477.2,308.3 L 480.1,317.7 L 484.9,326.3 L 487.6,335.8 L 489.7,345.6 L 492.7,355.6 L 501.1,361.9"/>
+      <path class="hero-strike-core" style="--len:478.1; --delay:0s" d="M 500.0,-30.0 L 504.8,-23.8 L 509.6,-17.7 L 503.6,-11.6 L 504.0,-3.1 L 511.3,-1.2 L 518.8,-0.3 L 521.4,6.9 L 525.8,13.1 L 527.0,20.3 L 531.3,26.2 L 532.6,33.3 L 533.1,40.4 L 529.0,47.1 L 521.3,49.0 L 520.2,56.5 L 515.0,62.1 L 513.0,69.0 L 512.5,76.2 L 515.9,82.9 L 522.6,86.3 L 523.6,93.0 L 528.3,97.8 L 532.8,103.5 L 530.6,110.4 L 525.8,115.4 L 524.5,122.2 L 524.7,128.9 L 523.6,135.5 L 523.6,143.1 L 519.7,149.5 L 514.0,154.6 L 506.3,155.0 L 501.4,161.3 L 502.8,169.1 L 510.1,172.8 L 511.2,180.9 L 509.1,187.3 L 506.9,193.6 L 506.5,201.4 L 499.3,204.5 L 503.5,211.1 L 501.1,218.4 L 506.8,222.6 L 513.3,225.3 L 518.1,230.3 L 523.8,234.3 L 520.3,241.2 L 523.6,248.2 L 530.0,252.7 L 536.7,256.7 L 541.9,263.9 L 539.0,272.2 L 538.8,280.0 L 538.6,287.9 L 530.3,290.1 L 526.6,297.9 L 523.3,303.4 L 522.3,309.7 L 521.6,316.9 L 515.2,320.2 L 513.0,326.7 L 506.6,329.3 L 502.5,334.2 L 500.0,340.0"/>
+      <path class="hero-strike-core sub" style="--len:180.2; --delay:0.30s" d="M 524.5,122.2 L 521.5,132.7 L 515.7,141.9 L 509.9,151.6 L 510.8,162.9 L 503.1,171.4 L 500.4,182.5 L 487.7,183.1 L 481.7,194.3 L 476.4,203.9 L 468.8,211.7 L 466.5,222.3 L 461.9,232.2 L 452.2,237.0 L 443.4,243.4 L 434.6,250.2 L 429.8,260.2"/>
+      <path class="hero-strike-core sub" style="--len:165.4; --delay:0.42s" d="M 501.1,218.4 L 501.0,229.4 L 492.6,236.3 L 483.1,241.6 L 480.8,252.2 L 476.1,261.1 L 472.0,270.2 L 474.2,280.5 L 470.0,290.2 L 471.0,300.3 L 477.2,308.3 L 480.1,317.7 L 484.9,326.3 L 487.6,335.8 L 489.7,345.6 L 492.7,355.6 L 501.1,361.9"/>
+    </svg>
+
+    <svg class="hero-burst" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
+      <path class="hero-burst-haze" style="--len:252.3; --delay:0.62s" d="M 500.0,340.0 L 502.0,332.8 L 503.9,325.5 L 506.7,318.6 L 508.5,311.3 L 505.0,304.5 L 501.3,297.8 L 501.7,290.1 L 500.6,282.4 L 498.3,275.1 L 498.2,267.3 L 499.1,259.4 L 504.4,253.4 L 505.3,245.8 L 503.9,238.3 L 498.0,232.9 L 497.0,225.0 L 502.6,219.5 L 507.2,213.1 L 509.2,205.2 L 514.8,199.2 L 512.5,191.3 L 509.9,183.5 L 510.3,174.9 L 515.4,167.9 L 508.6,163.3 L 506.2,155.4 L 503.9,148.0 L 501.9,140.5 L 503.1,132.7 L 500.3,125.3 L 500.3,117.6 L 500.0,110.0"/>
+      <path class="hero-burst-haze sub" style="--len:110.7; --delay:0.76s" d="M 503.9,238.3 L 489.9,235.5 L 477.0,241.8 L 466.1,233.4 L 452.9,229.5 L 441.4,236.0 L 429.3,241.0 L 416.6,247.2 L 403.1,243.3"/>
+      <path class="hero-burst-haze" style="--len:227.1; --delay:0.65s" d="M 500.0,340.0 L 495.0,334.4 L 493.2,327.0 L 485.6,326.7 L 479.5,322.1 L 478.2,315.3 L 478.8,308.4 L 479.1,301.2 L 475.0,295.2 L 475.0,288.1 L 477.1,281.4 L 473.8,275.2 L 469.6,269.6 L 474.0,264.2 L 476.6,257.6 L 478.0,250.4 L 474.5,243.9 L 470.2,238.5 L 465.0,233.7 L 458.0,233.2 L 451.5,230.6 L 449.2,223.8 L 443.5,219.4 L 443.1,212.6 L 441.7,205.8 L 441.1,198.6 L 435.7,193.7 L 430.6,189.1 L 425.1,185.2 L 419.1,182.0 L 412.7,180.0 L 405.9,180.8 L 399.3,178.9"/>
+      <path class="hero-burst-haze sub" style="--len:99.0; --delay:0.79s" d="M 476.6,257.6 L 468.1,248.5 L 467.4,236.0 L 464.5,223.8 L 454.3,216.6 L 450.5,205.1 L 447.5,193.4 L 453.0,182.3 L 452.9,169.9"/>
+      <path class="hero-burst-haze" style="--len:209.1; --delay:0.68s" d="M 500.0,340.0 L 505.0,336.1 L 508.7,330.9 L 515.4,330.4 L 520.1,325.8 L 523.5,319.8 L 529.4,316.6 L 531.1,310.2 L 530.9,303.6 L 536.6,300.2 L 537.7,293.7 L 541.3,288.8 L 544.5,283.8 L 549.1,279.1 L 548.8,272.6 L 552.2,267.6 L 554.2,261.8 L 552.9,255.3 L 556.7,249.9 L 558.6,244.1 L 559.3,238.1 L 563.1,233.1 L 567.5,228.7 L 571.3,223.5 L 571.3,216.9 L 577.3,214.6 L 582.3,210.4 L 586.1,204.9 L 592.6,203.0 L 595.2,196.1 L 592.1,189.4 L 595.4,183.3 L 600.7,178.9"/>
+      <path class="hero-burst-haze sub" style="--len:88.3; --delay:0.8200000000000001s" d="M 548.8,272.6 L 558.7,269.0 L 568.1,264.4 L 577.7,259.9 L 586.3,253.8 L 597.4,258.4 L 608.0,252.7 L 618.1,248.1 L 626.0,240.4"/>
+      <path class="hero-burst-haze" style="--len:182.9; --delay:0.71s" d="M 500.0,340.0 L 494.6,338.8 L 490.7,334.8 L 486.1,331.0 L 486.6,325.0 L 482.1,329.2 L 476.1,327.8 L 470.4,326.9 L 466.7,322.5 L 464.4,317.5 L 460.2,313.9 L 454.9,315.0 L 449.5,314.8 L 445.3,312.4 L 440.4,312.1 L 435.8,310.7 L 432.1,307.6 L 426.5,306.1 L 423.6,301.0 L 417.7,301.2 L 413.8,296.7 L 407.5,296.9 L 403.6,302.0 L 397.5,302.5 L 392.6,298.7 L 389.8,293.0 L 392.5,287.3 L 387.5,284.4 L 383.4,280.5 L 381.8,275.1 L 376.6,272.9 L 371.9,270.1 L 370.1,265.0"/>
+      <path class="hero-burst-haze sub" style="--len:79.7; --delay:0.85s" d="M 440.4,312.1 L 435.2,321.0 L 425.6,324.4 L 416.1,327.8 L 406.3,325.7 L 396.6,327.6 L 387.3,324.1 L 379.3,329.5 L 370.2,332.7"/>
+      <path class="hero-burst-haze" style="--len:183.7; --delay:0.66s" d="M 500.0,340.0 L 505.9,338.6 L 509.7,333.9 L 514.0,329.8 L 515.8,324.1 L 520.9,321.3 L 526.5,320.1 L 532.2,321.5 L 537.9,320.2 L 542.6,316.7 L 547.0,312.8 L 549.6,307.5 L 553.4,303.0 L 553.8,297.0 L 551.6,291.4 L 551.3,285.6 L 551.8,279.8 L 557.2,277.7 L 561.9,280.9 L 566.6,278.5 L 571.9,279.2 L 577.0,279.3 L 582.1,278.5 L 587.5,277.8 L 591.1,273.6 L 594.6,269.2 L 598.2,264.9 L 603.9,264.2 L 608.6,260.8 L 614.4,261.8 L 619.9,259.7 L 625.1,261.9 L 629.9,265.0"/>
+      <path class="hero-burst-haze sub" style="--len:88.4; --delay:0.8s" d="M 551.6,291.4 L 560.0,283.6 L 571.2,285.8 L 580.3,279.1 L 580.8,267.9 L 584.7,257.6 L 595.2,254.2 L 600.0,245.0 L 598.3,234.7"/>
+      <path class="hero-burst-haze" style="--len:177.7; --delay:0.69s" d="M 500.0,340.0 L 494.9,338.2 L 491.5,334.1 L 489.0,329.2 L 483.7,327.4 L 483.2,322.1 L 480.0,317.8 L 479.8,312.0 L 475.1,308.7 L 470.5,305.7 L 469.5,300.4 L 468.5,295.2 L 464.5,291.7 L 459.5,289.3 L 455.4,285.6 L 452.8,280.4 L 454.1,274.7 L 455.5,269.8 L 456.6,264.8 L 459.8,260.3 L 459.1,254.9 L 462.6,250.4 L 467.2,246.9 L 468.6,240.9 L 465.6,235.6 L 469.8,231.3 L 468.6,225.4 L 466.3,220.4 L 467.4,214.9 L 464.9,210.3 L 462.5,205.6 L 460.7,200.5 L 461.2,195.1"/>
+      <path class="hero-burst-haze sub" style="--len:86.9; --delay:0.83s" d="M 455.4,285.6 L 455.8,274.8 L 451.5,265.0 L 440.1,262.5 L 435.2,251.8 L 436.4,241.6 L 442.9,233.7 L 449.8,225.5 L 448.7,214.8"/>
+      <path class="hero-burst-haze" style="--len:194.9; --delay:0.63s" d="M 500.0,340.0 L 500.3,333.7 L 504.7,329.2 L 503.6,323.4 L 502.7,317.6 L 506.5,313.4 L 509.3,308.4 L 510.2,302.5 L 514.8,298.6 L 520.1,295.9 L 522.3,290.4 L 523.9,284.4 L 529.7,282.2 L 533.4,277.0 L 539.4,274.9 L 541.7,269.0 L 540.5,262.9 L 539.7,256.9 L 541.1,251.0 L 542.6,244.8 L 548.0,241.4 L 548.3,235.5 L 548.1,229.6 L 543.8,225.3 L 542.5,219.3 L 537.6,215.4 L 535.6,209.4 L 536.8,203.4 L 537.3,197.4 L 539.8,192.2 L 540.0,186.4 L 539.7,180.2 L 544.0,175.8"/>
+      <path class="hero-burst-haze sub" style="--len:86.7; --delay:0.77s" d="M 539.4,274.9 L 538.4,263.6 L 528.9,257.3 L 531.1,247.2 L 530.4,236.9 L 533.5,226.5 L 527.2,217.6 L 519.7,210.0 L 520.5,199.2"/>
+      <path class="hero-burst-glow" style="--len:252.3; --delay:0.62s" d="M 500.0,340.0 L 502.0,332.8 L 503.9,325.5 L 506.7,318.6 L 508.5,311.3 L 505.0,304.5 L 501.3,297.8 L 501.7,290.1 L 500.6,282.4 L 498.3,275.1 L 498.2,267.3 L 499.1,259.4 L 504.4,253.4 L 505.3,245.8 L 503.9,238.3 L 498.0,232.9 L 497.0,225.0 L 502.6,219.5 L 507.2,213.1 L 509.2,205.2 L 514.8,199.2 L 512.5,191.3 L 509.9,183.5 L 510.3,174.9 L 515.4,167.9 L 508.6,163.3 L 506.2,155.4 L 503.9,148.0 L 501.9,140.5 L 503.1,132.7 L 500.3,125.3 L 500.3,117.6 L 500.0,110.0"/>
+      <path class="hero-burst-glow sub" style="--len:110.7; --delay:0.76s" d="M 503.9,238.3 L 489.9,235.5 L 477.0,241.8 L 466.1,233.4 L 452.9,229.5 L 441.4,236.0 L 429.3,241.0 L 416.6,247.2 L 403.1,243.3"/>
+      <path class="hero-burst-glow" style="--len:227.1; --delay:0.65s" d="M 500.0,340.0 L 495.0,334.4 L 493.2,327.0 L 485.6,326.7 L 479.5,322.1 L 478.2,315.3 L 478.8,308.4 L 479.1,301.2 L 475.0,295.2 L 475.0,288.1 L 477.1,281.4 L 473.8,275.2 L 469.6,269.6 L 474.0,264.2 L 476.6,257.6 L 478.0,250.4 L 474.5,243.9 L 470.2,238.5 L 465.0,233.7 L 458.0,233.2 L 451.5,230.6 L 449.2,223.8 L 443.5,219.4 L 443.1,212.6 L 441.7,205.8 L 441.1,198.6 L 435.7,193.7 L 430.6,189.1 L 425.1,185.2 L 419.1,182.0 L 412.7,180.0 L 405.9,180.8 L 399.3,178.9"/>
+      <path class="hero-burst-glow sub" style="--len:99.0; --delay:0.79s" d="M 476.6,257.6 L 468.1,248.5 L 467.4,236.0 L 464.5,223.8 L 454.3,216.6 L 450.5,205.1 L 447.5,193.4 L 453.0,182.3 L 452.9,169.9"/>
+      <path class="hero-burst-glow" style="--len:209.1; --delay:0.68s" d="M 500.0,340.0 L 505.0,336.1 L 508.7,330.9 L 515.4,330.4 L 520.1,325.8 L 523.5,319.8 L 529.4,316.6 L 531.1,310.2 L 530.9,303.6 L 536.6,300.2 L 537.7,293.7 L 541.3,288.8 L 544.5,283.8 L 549.1,279.1 L 548.8,272.6 L 552.2,267.6 L 554.2,261.8 L 552.9,255.3 L 556.7,249.9 L 558.6,244.1 L 559.3,238.1 L 563.1,233.1 L 567.5,228.7 L 571.3,223.5 L 571.3,216.9 L 577.3,214.6 L 582.3,210.4 L 586.1,204.9 L 592.6,203.0 L 595.2,196.1 L 592.1,189.4 L 595.4,183.3 L 600.7,178.9"/>
+      <path class="hero-burst-glow sub" style="--len:88.3; --delay:0.8200000000000001s" d="M 548.8,272.6 L 558.7,269.0 L 568.1,264.4 L 577.7,259.9 L 586.3,253.8 L 597.4,258.4 L 608.0,252.7 L 618.1,248.1 L 626.0,240.4"/>
+      <path class="hero-burst-glow" style="--len:182.9; --delay:0.71s" d="M 500.0,340.0 L 494.6,338.8 L 490.7,334.8 L 486.1,331.0 L 486.6,325.0 L 482.1,329.2 L 476.1,327.8 L 470.4,326.9 L 466.7,322.5 L 464.4,317.5 L 460.2,313.9 L 454.9,315.0 L 449.5,314.8 L 445.3,312.4 L 440.4,312.1 L 435.8,310.7 L 432.1,307.6 L 426.5,306.1 L 423.6,301.0 L 417.7,301.2 L 413.8,296.7 L 407.5,296.9 L 403.6,302.0 L 397.5,302.5 L 392.6,298.7 L 389.8,293.0 L 392.5,287.3 L 387.5,284.4 L 383.4,280.5 L 381.8,275.1 L 376.6,272.9 L 371.9,270.1 L 370.1,265.0"/>
+      <path class="hero-burst-glow sub" style="--len:79.7; --delay:0.85s" d="M 440.4,312.1 L 435.2,321.0 L 425.6,324.4 L 416.1,327.8 L 406.3,325.7 L 396.6,327.6 L 387.3,324.1 L 379.3,329.5 L 370.2,332.7"/>
+      <path class="hero-burst-glow" style="--len:183.7; --delay:0.66s" d="M 500.0,340.0 L 505.9,338.6 L 509.7,333.9 L 514.0,329.8 L 515.8,324.1 L 520.9,321.3 L 526.5,320.1 L 532.2,321.5 L 537.9,320.2 L 542.6,316.7 L 547.0,312.8 L 549.6,307.5 L 553.4,303.0 L 553.8,297.0 L 551.6,291.4 L 551.3,285.6 L 551.8,279.8 L 557.2,277.7 L 561.9,280.9 L 566.6,278.5 L 571.9,279.2 L 577.0,279.3 L 582.1,278.5 L 587.5,277.8 L 591.1,273.6 L 594.6,269.2 L 598.2,264.9 L 603.9,264.2 L 608.6,260.8 L 614.4,261.8 L 619.9,259.7 L 625.1,261.9 L 629.9,265.0"/>
+      <path class="hero-burst-glow sub" style="--len:88.4; --delay:0.8s" d="M 551.6,291.4 L 560.0,283.6 L 571.2,285.8 L 580.3,279.1 L 580.8,267.9 L 584.7,257.6 L 595.2,254.2 L 600.0,245.0 L 598.3,234.7"/>
+      <path class="hero-burst-glow" style="--len:177.7; --delay:0.69s" d="M 500.0,340.0 L 494.9,338.2 L 491.5,334.1 L 489.0,329.2 L 483.7,327.4 L 483.2,322.1 L 480.0,317.8 L 479.8,312.0 L 475.1,308.7 L 470.5,305.7 L 469.5,300.4 L 468.5,295.2 L 464.5,291.7 L 459.5,289.3 L 455.4,285.6 L 452.8,280.4 L 454.1,274.7 L 455.5,269.8 L 456.6,264.8 L 459.8,260.3 L 459.1,254.9 L 462.6,250.4 L 467.2,246.9 L 468.6,240.9 L 465.6,235.6 L 469.8,231.3 L 468.6,225.4 L 466.3,220.4 L 467.4,214.9 L 464.9,210.3 L 462.5,205.6 L 460.7,200.5 L 461.2,195.1"/>
+      <path class="hero-burst-glow sub" style="--len:86.9; --delay:0.83s" d="M 455.4,285.6 L 455.8,274.8 L 451.5,265.0 L 440.1,262.5 L 435.2,251.8 L 436.4,241.6 L 442.9,233.7 L 449.8,225.5 L 448.7,214.8"/>
+      <path class="hero-burst-glow" style="--len:194.9; --delay:0.63s" d="M 500.0,340.0 L 500.3,333.7 L 504.7,329.2 L 503.6,323.4 L 502.7,317.6 L 506.5,313.4 L 509.3,308.4 L 510.2,302.5 L 514.8,298.6 L 520.1,295.9 L 522.3,290.4 L 523.9,284.4 L 529.7,282.2 L 533.4,277.0 L 539.4,274.9 L 541.7,269.0 L 540.5,262.9 L 539.7,256.9 L 541.1,251.0 L 542.6,244.8 L 548.0,241.4 L 548.3,235.5 L 548.1,229.6 L 543.8,225.3 L 542.5,219.3 L 537.6,215.4 L 535.6,209.4 L 536.8,203.4 L 537.3,197.4 L 539.8,192.2 L 540.0,186.4 L 539.7,180.2 L 544.0,175.8"/>
+      <path class="hero-burst-glow sub" style="--len:86.7; --delay:0.77s" d="M 539.4,274.9 L 538.4,263.6 L 528.9,257.3 L 531.1,247.2 L 530.4,236.9 L 533.5,226.5 L 527.2,217.6 L 519.7,210.0 L 520.5,199.2"/>
+      <path class="hero-burst-core" style="--len:252.3; --delay:0.62s" d="M 500.0,340.0 L 502.0,332.8 L 503.9,325.5 L 506.7,318.6 L 508.5,311.3 L 505.0,304.5 L 501.3,297.8 L 501.7,290.1 L 500.6,282.4 L 498.3,275.1 L 498.2,267.3 L 499.1,259.4 L 504.4,253.4 L 505.3,245.8 L 503.9,238.3 L 498.0,232.9 L 497.0,225.0 L 502.6,219.5 L 507.2,213.1 L 509.2,205.2 L 514.8,199.2 L 512.5,191.3 L 509.9,183.5 L 510.3,174.9 L 515.4,167.9 L 508.6,163.3 L 506.2,155.4 L 503.9,148.0 L 501.9,140.5 L 503.1,132.7 L 500.3,125.3 L 500.3,117.6 L 500.0,110.0"/>
+      <path class="hero-burst-core sub" style="--len:110.7; --delay:0.76s" d="M 503.9,238.3 L 489.9,235.5 L 477.0,241.8 L 466.1,233.4 L 452.9,229.5 L 441.4,236.0 L 429.3,241.0 L 416.6,247.2 L 403.1,243.3"/>
+      <path class="hero-burst-core" style="--len:227.1; --delay:0.65s" d="M 500.0,340.0 L 495.0,334.4 L 493.2,327.0 L 485.6,326.7 L 479.5,322.1 L 478.2,315.3 L 478.8,308.4 L 479.1,301.2 L 475.0,295.2 L 475.0,288.1 L 477.1,281.4 L 473.8,275.2 L 469.6,269.6 L 474.0,264.2 L 476.6,257.6 L 478.0,250.4 L 474.5,243.9 L 470.2,238.5 L 465.0,233.7 L 458.0,233.2 L 451.5,230.6 L 449.2,223.8 L 443.5,219.4 L 443.1,212.6 L 441.7,205.8 L 441.1,198.6 L 435.7,193.7 L 430.6,189.1 L 425.1,185.2 L 419.1,182.0 L 412.7,180.0 L 405.9,180.8 L 399.3,178.9"/>
+      <path class="hero-burst-core sub" style="--len:99.0; --delay:0.79s" d="M 476.6,257.6 L 468.1,248.5 L 467.4,236.0 L 464.5,223.8 L 454.3,216.6 L 450.5,205.1 L 447.5,193.4 L 453.0,182.3 L 452.9,169.9"/>
+      <path class="hero-burst-core" style="--len:209.1; --delay:0.68s" d="M 500.0,340.0 L 505.0,336.1 L 508.7,330.9 L 515.4,330.4 L 520.1,325.8 L 523.5,319.8 L 529.4,316.6 L 531.1,310.2 L 530.9,303.6 L 536.6,300.2 L 537.7,293.7 L 541.3,288.8 L 544.5,283.8 L 549.1,279.1 L 548.8,272.6 L 552.2,267.6 L 554.2,261.8 L 552.9,255.3 L 556.7,249.9 L 558.6,244.1 L 559.3,238.1 L 563.1,233.1 L 567.5,228.7 L 571.3,223.5 L 571.3,216.9 L 577.3,214.6 L 582.3,210.4 L 586.1,204.9 L 592.6,203.0 L 595.2,196.1 L 592.1,189.4 L 595.4,183.3 L 600.7,178.9"/>
+      <path class="hero-burst-core sub" style="--len:88.3; --delay:0.8200000000000001s" d="M 548.8,272.6 L 558.7,269.0 L 568.1,264.4 L 577.7,259.9 L 586.3,253.8 L 597.4,258.4 L 608.0,252.7 L 618.1,248.1 L 626.0,240.4"/>
+      <path class="hero-burst-core" style="--len:182.9; --delay:0.71s" d="M 500.0,340.0 L 494.6,338.8 L 490.7,334.8 L 486.1,331.0 L 486.6,325.0 L 482.1,329.2 L 476.1,327.8 L 470.4,326.9 L 466.7,322.5 L 464.4,317.5 L 460.2,313.9 L 454.9,315.0 L 449.5,314.8 L 445.3,312.4 L 440.4,312.1 L 435.8,310.7 L 432.1,307.6 L 426.5,306.1 L 423.6,301.0 L 417.7,301.2 L 413.8,296.7 L 407.5,296.9 L 403.6,302.0 L 397.5,302.5 L 392.6,298.7 L 389.8,293.0 L 392.5,287.3 L 387.5,284.4 L 383.4,280.5 L 381.8,275.1 L 376.6,272.9 L 371.9,270.1 L 370.1,265.0"/>
+      <path class="hero-burst-core sub" style="--len:79.7; --delay:0.85s" d="M 440.4,312.1 L 435.2,321.0 L 425.6,324.4 L 416.1,327.8 L 406.3,325.7 L 396.6,327.6 L 387.3,324.1 L 379.3,329.5 L 370.2,332.7"/>
+      <path class="hero-burst-core" style="--len:183.7; --delay:0.66s" d="M 500.0,340.0 L 505.9,338.6 L 509.7,333.9 L 514.0,329.8 L 515.8,324.1 L 520.9,321.3 L 526.5,320.1 L 532.2,321.5 L 537.9,320.2 L 542.6,316.7 L 547.0,312.8 L 549.6,307.5 L 553.4,303.0 L 553.8,297.0 L 551.6,291.4 L 551.3,285.6 L 551.8,279.8 L 557.2,277.7 L 561.9,280.9 L 566.6,278.5 L 571.9,279.2 L 577.0,279.3 L 582.1,278.5 L 587.5,277.8 L 591.1,273.6 L 594.6,269.2 L 598.2,264.9 L 603.9,264.2 L 608.6,260.8 L 614.4,261.8 L 619.9,259.7 L 625.1,261.9 L 629.9,265.0"/>
+      <path class="hero-burst-core sub" style="--len:88.4; --delay:0.8s" d="M 551.6,291.4 L 560.0,283.6 L 571.2,285.8 L 580.3,279.1 L 580.8,267.9 L 584.7,257.6 L 595.2,254.2 L 600.0,245.0 L 598.3,234.7"/>
+      <path class="hero-burst-core" style="--len:177.7; --delay:0.69s" d="M 500.0,340.0 L 494.9,338.2 L 491.5,334.1 L 489.0,329.2 L 483.7,327.4 L 483.2,322.1 L 480.0,317.8 L 479.8,312.0 L 475.1,308.7 L 470.5,305.7 L 469.5,300.4 L 468.5,295.2 L 464.5,291.7 L 459.5,289.3 L 455.4,285.6 L 452.8,280.4 L 454.1,274.7 L 455.5,269.8 L 456.6,264.8 L 459.8,260.3 L 459.1,254.9 L 462.6,250.4 L 467.2,246.9 L 468.6,240.9 L 465.6,235.6 L 469.8,231.3 L 468.6,225.4 L 466.3,220.4 L 467.4,214.9 L 464.9,210.3 L 462.5,205.6 L 460.7,200.5 L 461.2,195.1"/>
+      <path class="hero-burst-core sub" style="--len:86.9; --delay:0.83s" d="M 455.4,285.6 L 455.8,274.8 L 451.5,265.0 L 440.1,262.5 L 435.2,251.8 L 436.4,241.6 L 442.9,233.7 L 449.8,225.5 L 448.7,214.8"/>
+      <path class="hero-burst-core" style="--len:194.9; --delay:0.63s" d="M 500.0,340.0 L 500.3,333.7 L 504.7,329.2 L 503.6,323.4 L 502.7,317.6 L 506.5,313.4 L 509.3,308.4 L 510.2,302.5 L 514.8,298.6 L 520.1,295.9 L 522.3,290.4 L 523.9,284.4 L 529.7,282.2 L 533.4,277.0 L 539.4,274.9 L 541.7,269.0 L 540.5,262.9 L 539.7,256.9 L 541.1,251.0 L 542.6,244.8 L 548.0,241.4 L 548.3,235.5 L 548.1,229.6 L 543.8,225.3 L 542.5,219.3 L 537.6,215.4 L 535.6,209.4 L 536.8,203.4 L 537.3,197.4 L 539.8,192.2 L 540.0,186.4 L 539.7,180.2 L 544.0,175.8"/>
+      <path class="hero-burst-core sub" style="--len:86.7; --delay:0.77s" d="M 539.4,274.9 L 538.4,263.6 L 528.9,257.3 L 531.1,247.2 L 530.4,236.9 L 533.5,226.5 L 527.2,217.6 L 519.7,210.0 L 520.5,199.2"/>
+    </svg>
+
+    <div class="hero-smoke">
+      <i style="width:120px;height:80px;margin:-40px 0 0 -60px;animation-delay:0.60s"></i>
+      <i style="width:170px;height:100px;margin:-50px 0 0 -100px;animation-delay:0.68s"></i>
+      <i style="width:100px;height:70px;margin:-35px 0 0 -20px;animation-delay:0.74s"></i>
+      <i style="width:140px;height:90px;margin:-45px 0 0 -95px;animation-delay:0.82s"></i>
+    </div>
+
+    <div class="hero-impact-flash"><div class="glow"></div></div>
+    <div class="hero-whiteout"></div>
+
+    <div class="hero-cube-stage">
+      <div class="hero-reflection"><div class="hero-reflection-img"></div></div>
+      <div class="hero-cube-drop">
+        <div class="hero-cube-idle">
+          <div class="hero-cube">
+            <div class="hero-face front"></div>
+            <div class="hero-face back"></div>
+            <div class="hero-face right"></div>
+            <div class="hero-face left"></div>
+            <div class="hero-face top"></div>
+            <div class="hero-face bottom"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="hero-gallery"></div>
+  </div>
+  <p class="hero-eyebrow">Montreal &middot; Live band</p>
+  <h1>ZERO<span class="accent">-3-3</span></h1>
+  <p class="hero-tagline">Bollywood at the core. English, Bengali, and Telugu woven through. One stage, four languages, five voices that don't hold back.</p>
+  <div class="hero-actions">
+    <a class="btn btn-solid" href="#contact">Book the band</a>
+    <a class="btn btn-outline" href="https://www.instagram.com/zero33theband" target="_blank" rel="noopener">Follow @zero33theband</a>
+  </div>
+  <div class="scroll-cue">Scroll</div>
+</header>
+
+<svg class="z-beam reveal" viewBox="0 0 1200 28" preserveAspectRatio="none" aria-hidden="true">
+  <path d="M0,5 L60,23 L120,5 L180,23 L240,5 L300,23 L360,5 L420,23 L480,5 L540,23 L600,5 L660,23 L720,5 L780,23 L840,5 L900,23 L960,5 L1020,23 L1080,5 L1140,23 L1200,5"/>
+</svg>
+
+<!-- ================= ABOUT ================= -->
+<section class="section about" id="about">
+  <div class="about-grid">
+    <div>
+      <p class="eyebrow reveal">Who we are</p>
+      <h2 class="reveal">A Montreal band built on borrowed songs and an original sound.</h2>
+      <div class="about-body reveal">
+        <p>Zero-3-3 started the way most real bands do — a few friends, a shared love of music, and a lot of casual jamming that eventually turned into something worth putting on a stage. What began informally became a mission: bring South Asian music to Montreal, performed the way it deserves to be performed.</p>
+        <p>The band's core is Bollywood — the songs everyone knows, the ones that fill a room the second the first note hits. But Zero-3-3 doesn't stop there. English, Bengali, and Telugu all have a place in the setlist, because the band's five members carry more than one musical tradition between them, and none of it gets left out.</p>
+      </div>
+      <div class="langs reveal">
+        <span class="lang-tag">Hindi / Bollywood</span>
+        <span class="lang-tag">English</span>
+        <span class="lang-tag">Bengali</span>
+        <span class="lang-tag">Telugu</span>
+      </div>
+    </div>
+    <p class="pull-quote reveal">"Casual jamming that grew, session by session, into a real band with a real mission."</p>
+  </div>
+</section>
+
+<svg class="z-beam reveal" viewBox="0 0 1200 28" preserveAspectRatio="none" aria-hidden="true">
+  <path d="M0,5 L60,23 L120,5 L180,23 L240,5 L300,23 L360,5 L420,23 L480,5 L540,23 L600,5 L660,23 L720,5 L780,23 L840,5 L900,23 L960,5 L1020,23 L1080,5 L1140,23 L1200,5"/>
+</svg>
+
+<!-- ================= BAND ================= -->
+<section class="section band" id="band">
+  <div class="band-head">
+    <p class="eyebrow reveal">Five voices, one stage</p>
+    <h2 class="reveal">The band</h2>
+  </div>
+
+  <div class="band-grid">
+
+    <!-- Kaustav -->
+    <article class="member reveal" data-full-photo="assets/photos/kaustav-2.jpg">
+      <div class="member-photo"><img src="assets/photos/kaustav.jpg" alt="Kaustav Chakrabarty performing with an acoustic guitar on stage"></div>
+      <div class="member-body">
+        <h3 class="member-name">Kaustav Chakrabarty</h3>
+        <p class="member-role">Rhythm guitar &middot; Backing vocals &middot; Founding member</p>
+        <p class="member-teaser">The unspoken leader — rhythm guitar, backing vocals, and the reason the room feels steady.</p>
+        <div class="member-full">
+          <p>Kolkata-born, 1982. Kaustav didn't chase music so much as inherit it — his father put Mohd. Rafi in his ears before he ever touched a guitar, and that's still the root of everything he plays. College cracked the door open wider: western classical, early jazz, swing — a taste that quietly explains why his rhythm work never sits still.</p>
+          <p>Long before Zero-3-3, there was St. Louis, Missouri — where Kaustav teamed up with friends on The Rusty Strings, a genuinely polished production: professional studios, rented equipment, high-production-value videos, the works, all under a dedicated production house. Then came Montreal, where he, Rajarshi, and Arijit connected over that same shared love of music — casual jamming that grew, session by session, into a real band with a real mission: bringing South Asian music to the city's stages. Kaustav was there from the very first note.</p>
+          <p>By day, he's a service delivery manager at Morgan Stanley Montreal — all precision and calm under pressure, which might explain a lot about how he holds a band together. Somewhere in between, he cut his teeth with Procheshta in 2019 on rhythm guitar and backing vocals, then turned COVID lockdown into a launchpad — building a home studio and scoring background music for short films.</p>
+          <p>That studio didn't stay a solo project. It's now Zero-3-3's rehearsal space — the band jams out of his house. He's also the one behind the camera and the editing timeline, cutting content for the band's socials alongside Sukanya, and quietly geeking out on sound sampling and production software to get their covers sounding just right.</p>
+          <p>On stage, watch for the tell: mid-song, he throws a small smirk around the group — a silent "we good?" to the rest of the band. Nobody handed him the leadership. He just never stopped checking in, and somewhere along the way that became the job.</p>
+          <p>Off stage: father to a 13-year-old, Saint-Constant local, and currently president of the Indian Bengali Association of Montreal.</p>
+        </div>
+        <button class="member-toggle" type="button">Read full bio</button>
+      </div>
+    </article>
+
+    <!-- Sukanya -->
+    <article class="member reveal" data-full-photo="assets/photos/sukanya-2.jpg">
+      <div class="member-photo"><img src="assets/photos/sukanya.jpg" alt="Sukanya Chakraborty smiling, dressed in a maroon and gold sari"></div>
+      <div class="member-body">
+        <h3 class="member-name">Sukanya Chakraborty</h3>
+        <p class="member-role">Lead vocalist</p>
+        <p class="member-teaser">Classically trained, endlessly warm — the voice at the center of it all.</p>
+        <div class="member-full">
+          <p>There's a version of Sukanya that holds a PhD in Biophysics and now researches microbiology as a postdoctoral fellow at Université de Montréal. There's another version that trained under a lineage running straight back to the Banaras Gharana — first under her uncle, Shri Subhashish Chakraborty, then under Shri Falguni Roy, with a stretch studying briefly under the great Vidushi Kaushiki Chakraborty herself. Somehow, both of these people are the same person, and both show up every time she sings.</p>
+          <p>Her voice carries that classical training in its bones, but she's never boxed herself into it — light music, semi-classical, contemporary fusion all sit comfortably in her range. Before Montreal, she was already an independent artist, theatre actor, and composer across Kolkata and Pune, so the stage was never new territory. Now she fronts Zero-3-3 as lead vocalist, and it shows: she doesn't just hit the notes, she performs them.</p>
+          <p>Off the mic, ask literally anyone in the band and they'll tell you the same thing — Sukanya is the heart of the group. She's the one everyone, band members and their families alike, has quietly adopted as the baby sister of the crew. Brilliant, warm, and somehow never lets either side of her life outshine the other.</p>
+        </div>
+        <button class="member-toggle" type="button">Read full bio</button>
+      </div>
+    </article>
+
+    <!-- Abhiram -->
+    <article class="member reveal" data-full-photo="assets/photos/abhiram.jpg">
+      <div class="member-photo"><img src="assets/photos/abhiram-2.jpg" alt="Abhiram Yerramilli singing into a microphone on stage"></div>
+      <div class="member-body">
+        <h3 class="member-name">Abhiram Yerramilli</h3>
+        <p class="member-role">Lead vocalist</p>
+        <p class="member-teaser">Carnatic-trained, TV-tested, once shared a stage with a legend.</p>
+        <div class="member-full">
+          <p>Some voices are trained. Abhiram's was forged — grounded in Carnatic classical tradition, the kind of discipline that turns a song into architecture. He doesn't just sing traditional Annamacharya Keerthanas at Shringeri Vidya Bharathi Foundation Canada events — he commands them, treating centuries-old devotional compositions like they were written for exactly this moment, on exactly this stage.</p>
+          <p>Long before Zero-3-3, the spotlight had already found him. In 2010, he stepped into the pressure cooker of televised competition on Gemini TV's Sangeetha Mahayuddham, trading verses with the region's best under lights that don't forgive a wrong note. But the real measure of an artist is who trusts them with a stage — and Abhiram earned a trust few singers ever will. Performing for the Concern India Foundation and the SOFKIN Songfest, he shared a mic with K.S. Chithra — a National Award-winning voice behind thousands of recordings across languages, one of the most revered and demanding playback singers India has ever produced. You don't end up on a bill next to a legend like that by accident. It takes a voice that can genuinely hold its own in that company — and Abhiram's did.</p>
+          <p>By day, there's a whole other Abhiram — a sharp, credentialed professional running the show as Learning Experience Designer &amp; Account Lead at PamTen Inc., a Computer Science degree from JNTU and a stint at Amazon behind him. It's the kind of contrast that makes the stage version hit even harder: the calm, methodical strategist by daylight who transforms, mic in hand, into something entirely more electric after dark.</p>
+          <p>Off stage, home is Pointe-Claire, life with his wife, and a Maltipoo named Oly who runs the household with zero regard for anyone's schedule. And when Formula 1 season is live, Abhiram is fully in it — tracking every lap, every overtake, fully committed to Lewis Hamilton the way only a true fan commits. Same intensity as the stage, just aimed at a different kind of race.</p>
+        </div>
+        <button class="member-toggle" type="button">Read full bio</button>
+      </div>
+    </article>
+
+    <!-- Arijit -->
+    <article class="member reveal" data-full-photo="assets/photos/arijit-2.jpg">
+      <div class="member-photo"><img src="assets/photos/arijit.jpg" alt="Arijit Dasgupta playing electric guitar on stage"></div>
+      <div class="member-body">
+        <h3 class="member-name">Arijit Dasgupta</h3>
+        <p class="member-role">Lead guitar &middot; Founding member</p>
+        <p class="member-teaser">Founding lead guitarist. Takes a song apart just to find out what makes it tick.</p>
+        <div class="member-full">
+          <p>Arijit got his hands on a guitar in high school — his father lit the spark, but the obsession that followed was entirely his own. Mostly self-taught, he was never satisfied just playing a song; he had to take it apart first, work out why it worked, then put it back together. That instinct showed up early, powering his college band, and followed him through a decade living and working in Bangalore, where he became a fixture in his office band.</p>
+          <p>He was there when Zero-3-3 came together in 2023 — one of the three founding sparks, alongside Kaustav and Rajarshi, who turned casual jamming into a real band with a real mission. But Arijit didn't just bring a guitar to that first session; he brought the architecture. His real passion is arrangement — pulling a song apart down to its bones and reassembling it into something that feels both fresh and effortless.</p>
+          <p>That instinct for structure isn't a coincidence. By day, he's a manager at Morgan Stanley Montreal, and the same clean, organized mindset shows up note-for-note in how he builds an arrangement. Put him on a stage, though, and all that structure detonates into pure energy — fully locked into the music, vibing with every track, radiating the kind of presence that's contagious from the front row back.</p>
+          <p>Off stage, his loyalties are non-negotiable: Kolkata Knight Riders and Manchester United, win or lose, no exceptions. These days his most demanding project isn't a set list or a sprint deadline — it's keeping up with his two-year-old daughter, who keeps him busy, grounded, and perpetually on his toes.</p>
+          <p>Ask anyone in the band and you'll hear the same thing twice: Arijit is the one already fixing the cable, tuning the spare guitar, or talking someone down before a show. Genuinely, reliably kind — the kind of bandmate everyone's glad to have in the room.</p>
+        </div>
+        <button class="member-toggle" type="button">Read full bio</button>
+      </div>
+    </article>
+
+    <!-- Rajarshi -->
+    <article class="member reveal" data-full-photo="assets/photos/rajarshi.jpeg">
+      <div class="member-photo"><img src="assets/photos/rajarshi-2.jpeg" alt="Rajarshi Banerjee relaxed at home with a djembe drum"></div>
+      <div class="member-body">
+        <h3 class="member-name">Rajarshi Banerjee</h3>
+        <p class="member-role">Drums &middot; Founding member</p>
+        <p class="member-teaser">Founding drummer. Still flying in from Vancouver because distance was never the plan.</p>
+        <div class="member-full">
+          <p>Rajarshi is one of the three original sparks behind Zero-3-3 — he, Kaustav, and Arijit connected in Montreal over nothing more than a shared love of music, and what started as casual jamming turned into a real mission: bringing South Asian music to the city's stages. Twenty-plus years into a career as an animator — currently a Senior Gameplay Animator at 2K Vancouver — he brings the same instinct for timing and rhythm to the kit that he brings to a frame-by-frame sequence.</p>
+          <p>Off stage, the résumé keeps going: animation and short filmmaking on the creative side, football on the fan and player side — he still turns out for local teams in Vancouver, so this isn't couch punditry. He's also a die-hard Manchester United supporter, which — let's be honest — takes a certain amount of resilience these days, and switches allegiance to Germany the moment the World Cup rolls around, presumably for a taste of actually winning something. He's also lived across multiple countries, Mexico among them, which maybe explains why nothing about touring or travel ever seems to faze him.</p>
+          <p>Here's the thing about Rajarshi, though: about a year and a half ago, work took him to Vancouver — full-time, across the country from the rest of the band. Most drummers would've called that the end. Rajarshi flew back to Montreal to play a show with Zero-3-3 anyway. Founding member, current member, distance be damned.</p>
+          <p>And when he is behind the kit, don't expect it to be predictable — he's known for slipping in a little mischief mid-set, a surprise entrance or a playful curveball the rest of the band has to catch in real time. Keeps everyone on their toes, including the crowd.</p>
+        </div>
+        <button class="member-toggle" type="button">Read full bio</button>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<svg class="z-beam reveal" viewBox="0 0 1200 28" preserveAspectRatio="none" aria-hidden="true">
+  <path d="M0,5 L60,23 L120,5 L180,23 L240,5 L300,23 L360,5 L420,23 L480,5 L540,23 L600,5 L660,23 L720,5 L780,23 L840,5 L900,23 L960,5 L1020,23 L1080,5 L1140,23 L1200,5"/>
+</svg>
+
+<!-- ================= GALLERY ================= -->
+<section class="section" id="gallery">
+  <p class="eyebrow reveal">On stage &amp; off</p>
+  <h2 class="reveal">Gallery</h2>
+  <div class="placeholder-panel reveal">
+    <span class="eyebrow">Coming soon</span>
+    <p>The full photo gallery goes here once performance and event photos are exported and added — this section is wired up and ready for that drop-in.</p>
+  </div>
+</section>
+
+<svg class="z-beam reveal" viewBox="0 0 1200 28" preserveAspectRatio="none" aria-hidden="true">
+  <path d="M0,5 L60,23 L120,5 L180,23 L240,5 L300,23 L360,5 L420,23 L480,5 L540,23 L600,5 L660,23 L720,5 L780,23 L840,5 L900,23 L960,5 L1020,23 L1080,5 L1140,23 L1200,5"/>
+</svg>
+
+<!-- ================= LIVE ================= -->
+<section class="section" id="live">
+  <p class="eyebrow reveal">Watch</p>
+  <h2 class="reveal">Live</h2>
+  <div class="placeholder-panel reveal">
+    <span class="eyebrow">Coming soon</span>
+    <p>Performance clips and highlight reels will live here — either self-hosted video or embedded straight from Instagram, depending on the clip.</p>
+  </div>
+</section>
+
+<svg class="z-beam reveal" viewBox="0 0 1200 28" preserveAspectRatio="none" aria-hidden="true">
+  <path d="M0,5 L60,23 L120,5 L180,23 L240,5 L300,23 L360,5 L420,23 L480,5 L540,23 L600,5 L660,23 L720,5 L780,23 L840,5 L900,23 L960,5 L1020,23 L1080,5 L1140,23 L1200,5"/>
+</svg>
+
+<!-- ================= CONTACT ================= -->
+<section class="section" id="contact">
+  <div class="contact-grid">
+    <div class="contact-info">
+      <p class="eyebrow reveal">Get in touch</p>
+      <h2 class="reveal">Book Zero-3-3</h2>
+      <p class="reveal">For weddings, festivals, private events, or general inquiries — send a note and the band will get back to you.</p>
+      <ul class="contact-links reveal">
+        <li><a href="https://www.instagram.com/zero33theband" target="_blank" rel="noopener">@zero33theband on Instagram</a></li>
+      </ul>
+    </div>
+
+    <form class="contact-form reveal" id="contactForm">
+      <div class="field">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="field">
+        <label for="type">Inquiry type</label>
+        <select id="type" name="type">
+          <option>Booking / event</option>
+          <option>Wedding</option>
+          <option>General inquiry</option>
+          <option>Press</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" required></textarea>
+      </div>
+      <button class="btn btn-solid" type="submit">Send message</button>
+      <p class="form-note">Draft note: this form isn't wired to an inbox yet — it needs a form-handling endpoint (e.g. Formspree or a Cloudflare Pages Function) connected before it can actually deliver messages.</p>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <img src="assets/branding/logo.png" alt="Zero-3-3" class="footer-mark">
+  <span class="footer-meta">Zero-3-3 &middot; Montreal &middot; Draft site</span>
+  <div class="footer-links">
+    <a href="https://www.instagram.com/zero33theband" target="_blank" rel="noopener">Instagram</a>
+    <a href="#top">Back to top</a>
+  </div>
+</footer>
+
+<div class="bio-modal" id="bioModal" role="dialog" aria-modal="true" aria-labelledby="bioModalName">
+  <div class="bio-modal-panel">
+    <button class="bio-modal-close" type="button" aria-label="Close bio">&times;</button>
+    <div class="bio-modal-photo" id="bioModalPhoto"></div>
+    <div class="bio-modal-content">
+      <h3 id="bioModalName"></h3>
+      <p class="member-role" id="bioModalRole"></p>
+      <div id="bioModalBody"></div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
