@@ -91,18 +91,28 @@ if (contactForm) {
 }
 
 // ---------------------------------------------------------------------------
+// Shared helper: fetch a build-generated manifest.json listing whatever
+// photos/videos are sitting in a given assets/ folder. These files are
+// written automatically by scripts/generate-manifests.js on every deploy —
+// nobody ever edits filenames by hand.
+// ---------------------------------------------------------------------------
+async function loadManifest(folder) {
+  try {
+    const res = await fetch(`assets/${folder}/manifest.json`, { cache: 'no-store' });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    return [];
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Hero background: lightning + logo reveal, then a photo gallery, on a loop.
 //
-// To add your own hero background photos: drop image files into
-// assets/hero-gallery/ and list their filenames below. You can add as many
-// (or as few) as you like — the timing adjusts automatically. Leave the list
-// empty and the hero will just show the logo reveal, at rest, as it does now.
+// Photos come from assets/hero-gallery/ automatically — drop image files in
+// there and push. No filenames to type in here.
 // ---------------------------------------------------------------------------
-const HERO_GALLERY_PHOTOS = [
-  // 'band-live-1.jpg',
-  // 'band-live-2.jpg',
-];
-
 (function heroAnim() {
   const heroAnimEl = document.querySelector('.hero-anim');
   const galleryEl = document.querySelector('.hero-gallery');
@@ -111,67 +121,177 @@ const HERO_GALLERY_PHOTOS = [
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  galleryEl.innerHTML = HERO_GALLERY_PHOTOS.map((file) =>
-    `<div class="hero-gallery-slide" style="background-image:url('assets/hero-gallery/${file}')"></div>`
-  ).join('');
-  const slides = Array.from(galleryEl.querySelectorAll('.hero-gallery-slide'));
+  loadManifest('hero-gallery').then((entries) => {
+    galleryEl.innerHTML = entries.map((entry) =>
+      `<div class="hero-gallery-slide" style="background-image:url('assets/hero-gallery/${entry.file}')"></div>`
+    ).join('');
+    const slides = Array.from(galleryEl.querySelectorAll('.hero-gallery-slide'));
 
-  if (reduceMotion) {
-    // Skip the animated reveal entirely; show one static photo if we have any,
-    // otherwise leave the resting logo cube visible (handled by CSS already).
-    if (slides.length) {
-      revealEl.style.display = 'none';
-      galleryEl.classList.add('is-visible');
-      slides[0].classList.add('is-visible');
+    if (reduceMotion) {
+      // Skip the animated reveal entirely; show one static photo if we have any,
+      // otherwise leave the resting logo cube visible (handled by CSS already).
+      if (slides.length) {
+        revealEl.style.display = 'none';
+        galleryEl.classList.add('is-visible');
+        slides[0].classList.add('is-visible');
+      }
+      return;
     }
-    return;
-  }
 
-  if (!slides.length) return; // no photos configured — reveal plays once and rests, as before
+    if (!slides.length) return; // no photos yet — reveal plays once and rests, as before
 
-  const FADE_MS = 900;
-  const HOLD_MS = 5000;
+    const FADE_MS = 900;
+    const HOLD_MS = 5000;
 
-  function playGallery() {
-    galleryEl.classList.add('is-visible');
-    let i = 0;
-    (function step() {
-      slides[i].classList.add('is-visible');
-      setTimeout(() => {
-        slides[i].classList.remove('is-visible');
-        i++;
-        if (i < slides.length) {
-          step();
-        } else {
-          setTimeout(finishGallery, FADE_MS);
-        }
-      }, HOLD_MS);
-    })();
-  }
+    function playGallery() {
+      galleryEl.classList.add('is-visible');
+      let i = 0;
+      (function step() {
+        slides[i].classList.add('is-visible');
+        setTimeout(() => {
+          slides[i].classList.remove('is-visible');
+          i++;
+          if (i < slides.length) {
+            step();
+          } else {
+            setTimeout(finishGallery, FADE_MS);
+          }
+        }, HOLD_MS);
+      })();
+    }
 
-  function finishGallery() {
-    galleryEl.classList.remove('is-visible');
-    setTimeout(replayReveal, FADE_MS);
-  }
+    function finishGallery() {
+      galleryEl.classList.remove('is-visible');
+      setTimeout(replayReveal, FADE_MS);
+    }
 
-  function replayReveal() {
-    const fresh = revealEl.cloneNode(true);
-    fresh.classList.remove('is-hidden');
-    revealEl.parentNode.replaceChild(fresh, revealEl);
-    revealEl = fresh;
+    function replayReveal() {
+      const fresh = revealEl.cloneNode(true);
+      fresh.classList.remove('is-hidden');
+      revealEl.parentNode.replaceChild(fresh, revealEl);
+      revealEl = fresh;
+      watchReveal();
+    }
+
+    function watchReveal() {
+      const cubeDrop = revealEl.querySelector('.hero-cube-drop');
+      if (!cubeDrop) return;
+      cubeDrop.addEventListener('animationend', function onEnd(e) {
+        if (e.animationName !== 'heroCubeZoom') return;
+        cubeDrop.removeEventListener('animationend', onEnd);
+        revealEl.classList.add('is-hidden');
+        setTimeout(playGallery, FADE_MS);
+      });
+    }
+
     watchReveal();
+  });
+})();
+
+// ---------------------------------------------------------------------------
+// Gallery & Live sections: photo/video grids, populated the same way as the
+// hero background — drop files into assets/gallery/ or assets/live/ and
+// push. Each section quietly stays on its "coming soon" panel until at
+// least one file shows up in its folder.
+// ---------------------------------------------------------------------------
+(function mediaGalleries() {
+  const lightbox = document.getElementById('mediaLightbox');
+  const lightboxStage = document.getElementById('mediaLightboxStage');
+  const lightboxClose = lightbox ? lightbox.querySelector('.media-lightbox-close') : null;
+  const lightboxPrev = lightbox ? lightbox.querySelector('.media-lightbox-nav.prev') : null;
+  const lightboxNext = lightbox ? lightbox.querySelector('.media-lightbox-nav.next') : null;
+
+  let activeEntries = [];
+  let activeFolder = '';
+  let activeIndex = 0;
+  let lastFocusedTile = null;
+
+  function renderStage() {
+    if (!lightboxStage) return;
+    const entry = activeEntries[activeIndex];
+    if (!entry) return;
+    const src = `assets/${activeFolder}/${entry.file}`;
+    lightboxStage.innerHTML = entry.type === 'video'
+      ? `<video src="${src}" controls autoplay playsinline></video>`
+      : `<img src="${src}" alt="">`;
+    const showNav = activeEntries.length > 1;
+    if (lightboxPrev) lightboxPrev.style.visibility = showNav ? 'visible' : 'hidden';
+    if (lightboxNext) lightboxNext.style.visibility = showNav ? 'visible' : 'hidden';
   }
 
-  function watchReveal() {
-    const cubeDrop = revealEl.querySelector('.hero-cube-drop');
-    if (!cubeDrop) return;
-    cubeDrop.addEventListener('animationend', function onEnd(e) {
-      if (e.animationName !== 'heroCubeZoom') return;
-      cubeDrop.removeEventListener('animationend', onEnd);
-      revealEl.classList.add('is-hidden');
-      setTimeout(playGallery, FADE_MS);
+  function openLightbox(entries, folder, index, trigger) {
+    activeEntries = entries;
+    activeFolder = folder;
+    activeIndex = index;
+    lastFocusedTile = trigger || null;
+    renderStage();
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (lightboxClose) lightboxClose.focus();
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+    lightboxStage.innerHTML = ''; // stop any playing video
+    if (lastFocusedTile) lastFocusedTile.focus();
+  }
+
+  function stepLightbox(delta) {
+    if (!activeEntries.length) return;
+    activeIndex = (activeIndex + delta + activeEntries.length) % activeEntries.length;
+    renderStage();
+  }
+
+  if (lightbox) {
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+    if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+    if (lightboxPrev) lightboxPrev.addEventListener('click', () => stepLightbox(-1));
+    if (lightboxNext) lightboxNext.addEventListener('click', () => stepLightbox(1));
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') stepLightbox(-1);
+      if (e.key === 'ArrowRight') stepLightbox(1);
     });
   }
 
-  watchReveal();
+  function renderGrid(sectionId, folder) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    const placeholder = section.querySelector('.placeholder-panel');
+    const grid = section.querySelector('.gallery-grid');
+    if (!grid) return;
+
+    loadManifest(folder).then((entries) => {
+      if (!entries.length) return; // leave the "coming soon" panel showing
+
+      grid.innerHTML = entries.map((entry, i) => {
+        const src = `assets/${folder}/${entry.file}`;
+        if (entry.type === 'video') {
+          return `<button class="tile tile-video" type="button" data-index="${i}" aria-label="Open video">
+            <video src="${src}" muted preload="metadata" playsinline></video>
+            <span class="play-badge" aria-hidden="true">&#9658;</span>
+          </button>`;
+        }
+        return `<button class="tile" type="button" data-index="${i}" aria-label="Open photo">
+          <img src="${src}" loading="lazy" alt="">
+        </button>`;
+      }).join('');
+
+      grid.querySelectorAll('.tile').forEach((tile) => {
+        tile.addEventListener('click', () => {
+          openLightbox(entries, folder, Number(tile.dataset.index), tile);
+        });
+      });
+
+      grid.hidden = false;
+      if (placeholder) placeholder.hidden = true;
+    });
+  }
+
+  renderGrid('gallery', 'gallery');
+  renderGrid('live', 'live');
 })();

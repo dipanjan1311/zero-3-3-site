@@ -266,6 +266,7 @@
     <span class="eyebrow">Coming soon</span>
     <p>The full photo gallery goes here once performance and event photos are exported and added — this section is wired up and ready for that drop-in.</p>
   </div>
+  <div class="gallery-grid" hidden></div>
 </section>
 
 <svg class="z-beam reveal" viewBox="0 0 1200 28" preserveAspectRatio="none" aria-hidden="true">
@@ -280,6 +281,7 @@
     <span class="eyebrow">Coming soon</span>
     <p>Performance clips and highlight reels will live here — either self-hosted video or embedded straight from Instagram, depending on the clip.</p>
   </div>
+  <div class="gallery-grid" hidden></div>
 </section>
 
 <svg class="z-beam reveal" viewBox="0 0 1200 28" preserveAspectRatio="none" aria-hidden="true">
@@ -345,6 +347,13 @@
       <div id="bioModalBody"></div>
     </div>
   </div>
+</div>
+
+<div class="media-lightbox" id="mediaLightbox" role="dialog" aria-modal="true" aria-label="Media viewer">
+  <button class="media-lightbox-close" type="button" aria-label="Close">&times;</button>
+  <button class="media-lightbox-nav prev" type="button" aria-label="Previous">&#8592;</button>
+  <div class="media-lightbox-stage" id="mediaLightboxStage"></div>
+  <button class="media-lightbox-nav next" type="button" aria-label="Next">&#8594;</button>
 </div>
 
 <script src="script.js"></script>
