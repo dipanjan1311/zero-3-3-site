@@ -123,7 +123,7 @@ async function loadManifest(folder) {
 
   loadManifest('hero-gallery').then((entries) => {
     galleryEl.innerHTML = entries.map((entry) =>
-      `<div class="hero-gallery-slide" style="background-image:url('assets/hero-gallery/${entry.file}')"></div>`
+      `<div class="hero-gallery-slide" style="background-image:url('assets/hero-gallery/${encodeURIComponent(entry.file)}')"></div>`
     ).join('');
     const slides = Array.from(galleryEl.querySelectorAll('.hero-gallery-slide'));
 
@@ -210,7 +210,7 @@ async function loadManifest(folder) {
     if (!lightboxStage) return;
     const entry = activeEntries[activeIndex];
     if (!entry) return;
-    const src = `assets/${activeFolder}/${entry.file}`;
+    const src = `assets/${activeFolder}/${encodeURIComponent(entry.file)}`;
     lightboxStage.innerHTML = entry.type === 'video'
       ? `<video src="${src}" controls autoplay playsinline></video>`
       : `<img src="${src}" alt="">`;
@@ -269,7 +269,7 @@ async function loadManifest(folder) {
       if (!entries.length) return; // leave the "coming soon" panel showing
 
       grid.innerHTML = entries.map((entry, i) => {
-        const src = `assets/${folder}/${entry.file}`;
+        const src = `assets/${folder}/${encodeURIComponent(entry.file)}`;
         if (entry.type === 'video') {
           return `<button class="tile tile-video" type="button" data-index="${i}" aria-label="Open video">
             <video src="${src}" muted preload="metadata" playsinline></video>
