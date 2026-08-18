@@ -18,6 +18,14 @@
  * a gallery follows filename order (numeric-aware), so prefix filenames
  * with numbers (01-, 02-...) or dates if you care about the order they
  * appear in.
+ *
+ * VIDEO POSTERS: for any video, e.g. clip.mp4, add a small poster image
+ * named clip.poster.jpg in the same folder (a single still frame, a few
+ * hundred KB) and the site will use that lightweight image for thumbnails
+ * instead of loading the video itself — this is the single biggest thing
+ * you can do for gallery/marquee performance. See the README for the
+ * one-line ffmpeg command that generates one. Videos without a matching
+ * poster still work, just fall back to a (slower) video-based thumbnail.
  */
 
 const fs = require('fs');
@@ -41,6 +49,11 @@ function classify(filename) {
   return null;
 }
 
+function posterNameFor(filename) {
+  const ext = path.extname(filename);
+  return filename.slice(0, -ext.length) + '.poster.jpg';
+}
+
 function run() {
   let hadOversized = false;
 
@@ -51,10 +64,28 @@ function run() {
       fs.mkdirSync(dirPath, { recursive: true });
     }
 
-    const entries = fs
+    const allFiles = fs
       .readdirSync(dirPath)
-      .filter((name) => !name.startsWith('.') && name !== 'manifest.json')
-      .map((name) => ({ file: name, type: classify(name) }))
+      .filter((name) => !name.startsWith('.') && name !== 'manifest.json');
+    const fileSet = new Set(allFiles);
+
+    // Poster images (clip.poster.jpg) are matched to their video and
+    // excluded from showing up as their own separate gallery entries.
+    const posterFiles = new Set(
+      allFiles.filter((name) => name.toLowerCase().endsWith('.poster.jpg'))
+    );
+
+    const entries = allFiles
+      .filter((name) => !posterFiles.has(name))
+      .map((name) => {
+        const type = classify(name);
+        const entry = { file: name, type };
+        if (type === 'video') {
+          const poster = posterNameFor(name);
+          entry.poster = fileSet.has(poster) ? poster : null;
+        }
+        return entry;
+      })
       .filter((entry) => entry.type && target.kinds.includes(entry.type))
       .filter((entry) => {
         const size = fs.statSync(path.join(dirPath, entry.file)).size;
@@ -70,11 +101,14 @@ function run() {
       })
       .sort((a, b) => a.file.localeCompare(b.file, undefined, { numeric: true, sensitivity: 'base' }));
 
+    const videosWithoutPoster = entries.filter((e) => e.type === 'video' && !e.poster).length;
+
     const manifestPath = path.join(dirPath, 'manifest.json');
     fs.writeFileSync(manifestPath, JSON.stringify(entries, null, 2) + '\n');
 
     console.log(
-      `[manifests] ${target.dir}/manifest.json — ${entries.length} file${entries.length === 1 ? '' : 's'}`
+      `[manifests] ${target.dir}/manifest.json — ${entries.length} file${entries.length === 1 ? '' : 's'}` +
+      (videosWithoutPoster ? ` (${videosWithoutPoster} video${videosWithoutPoster === 1 ? '' : 's'} missing a .poster.jpg — see README)` : '')
     );
   }
 

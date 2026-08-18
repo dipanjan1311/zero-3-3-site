@@ -77,6 +77,51 @@ if ('IntersectionObserver' in window && revealEls.length) {
   revealEls.forEach(el => el.classList.add('in-view'));
 }
 
+// Contact form — draft mode: no live endpoint connected yet
+const contactForm = document.getElementById('contactForm');
+if (contactForm) {
+  contactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const note = contactForm.querySelector('.form-note');
+    if (note) {
+      note.textContent = 'This is a draft — the form isn\'t connected to an inbox yet, so nothing was sent. Wire up a form-handling endpoint before this goes live.';
+      note.style.borderColor = 'var(--gold)';
+    }
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Past members — photo, name, and role only, no bio. Unlike the photo/video
+// folders above, this one's hand-edited: past members change rarely, so
+// there's no need for a folder-scanning build step. Add a photo to
+// assets/past-members/, then add one line below for them.
+// ---------------------------------------------------------------------------
+const PAST_MEMBERS = [
+  { name: 'Abhinav', role: 'Keyboard &middot; Vocals', photo: 'assets/past-members/abhinav.jpg' },
+  { name: 'Kaivalya', role: 'Keyboard', photo: 'assets/past-members/kaivalya.jpg' },
+  { name: 'Shreejit', role: 'Bass guitar', photo: 'assets/past-members/shreejit.jpg' },
+  { name: 'Rachit', role: 'Percussion', photo: 'assets/past-members/rachit.jpg' },
+  { name: 'Subhankar', role: 'Vocals', photo: 'assets/past-members/subhankar.jpg' },
+];
+
+(function pastMembers() {
+  const section = document.getElementById('past-members');
+  if (!section || !PAST_MEMBERS.length) return;
+  const placeholder = section.querySelector('.placeholder-panel');
+  const grid = section.querySelector('.past-members-grid');
+  if (!grid) return;
+
+  grid.innerHTML = PAST_MEMBERS.map((m) => `
+    <div class="past-member">
+      <div class="past-member-photo"><img src="${m.photo}" alt="${m.name}" loading="lazy"></div>
+      <div class="past-member-name">${m.name}</div>
+      <div class="past-member-role">${m.role}</div>
+    </div>
+  `).join('');
+  grid.hidden = false;
+  if (placeholder) placeholder.hidden = true;
+})();
+
 // ---------------------------------------------------------------------------
 // Shared helper: fetch a build-generated manifest.json listing whatever
 // photos/videos are sitting in a given assets/ folder. These files are
@@ -203,8 +248,11 @@ async function loadManifest(folder) {
   function tileHTML(entry, folder, index) {
     const src = `assets/${folder}/${encodeURIComponent(entry.file)}`;
     if (entry.type === 'video') {
+      const thumb = entry.poster
+        ? `<img src="assets/${folder}/${encodeURIComponent(entry.poster)}" loading="lazy" alt="">`
+        : `<video src="${src}" muted preload="metadata" playsinline></video>`;
       return `<button class="tile tile-video" type="button" data-index="${index}" aria-label="Open video">
-        <video src="${src}" muted preload="metadata" playsinline></video>
+        ${thumb}
         <span class="play-badge" aria-hidden="true">&#9654;</span>
       </button>`;
     }
@@ -394,5 +442,5 @@ async function loadManifest(folder) {
   }
 
   createMediaSection('gallery', 'gallery', 'Studio');
-  createMediaSection('live', 'live', 'Live');
+  createMediaSection('live', 'live', 'Live performances');
 })();
