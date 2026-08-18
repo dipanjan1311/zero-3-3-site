@@ -11,9 +11,9 @@
   --bone-dim: #a89c85;
   --maroon: #7a1f2b;
 
-  --display: "Fraunces", Georgia, serif;
-  --body: "Inter", -apple-system, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --display: "Bodoni Moda", Georgia, serif;
+  --body: "Work Sans", -apple-system, sans-serif;
+  --mono: "Space Mono", ui-monospace, monospace;
 
   --gap: clamp(1.25rem, 3vw, 2.5rem);
   --edge: clamp(1.25rem, 5vw, 4rem);
@@ -65,6 +65,22 @@ h1, h2, h3 {
   margin: 0;
 }
 
+.section h2 {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.5rem;
+}
+.section h2::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 3.2rem;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold-bright), var(--maroon) 130%);
+  box-shadow: 0 0 12px rgba(232, 201, 122, 0.5);
+}
+
 .section {
   padding: clamp(3.5rem, 9vw, 7rem) var(--edge);
   max-width: 1200px;
@@ -83,11 +99,12 @@ h1, h2, h3 {
 }
 .z-beam path {
   fill: none;
-  stroke: var(--gold);
+  stroke: var(--gold-bright);
   stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
-  opacity: 0.55;
+  opacity: 0.7;
+  filter: drop-shadow(0 0 4px rgba(232, 201, 122, 0.65));
 }
 .z-beam.reveal path {
   stroke-dasharray: 1300;
@@ -196,7 +213,10 @@ h1, h2, h3 {
   line-height: 0.95;
   letter-spacing: -0.01em;
 }
-.hero h1 .accent { color: var(--gold-bright); }
+.hero h1 .accent {
+  color: var(--gold-bright);
+  text-shadow: 0 0 30px rgba(232, 201, 122, 0.55), 0 0 70px rgba(198, 162, 77, 0.3);
+}
 .hero-tagline {
   max-width: 34rem;
   margin-top: 1.4rem;
@@ -420,13 +440,23 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
   color: var(--void);
   border-color: var(--gold);
 }
-.btn-solid:hover { background: var(--gold-bright); border-color: var(--gold-bright); }
+.btn-solid:hover {
+  background: var(--gold-bright);
+  border-color: var(--gold-bright);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(198, 162, 77, 0.4);
+}
 .btn-outline {
   background: transparent;
   color: var(--bone);
   border-color: var(--bone-dim);
 }
-.btn-outline:hover { border-color: var(--gold-bright); color: var(--gold-bright); }
+.btn-outline:hover {
+  border-color: var(--gold-bright);
+  color: var(--gold-bright);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(198, 162, 77, 0.22);
+}
 
 .scroll-cue {
   position: absolute;
@@ -472,13 +502,26 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
 .about-body { margin-top: 1.6rem; color: var(--bone-dim); font-size: 1.05rem; }
 .about-body p + p { margin-top: 1rem; }
 .pull-quote {
+  position: relative;
   font-family: var(--display);
   font-style: italic;
   font-size: clamp(1.3rem, 2.6vw, 1.7rem);
   color: var(--gold-bright);
   line-height: 1.4;
-  border-left: 2px solid var(--gold);
-  padding-left: 1.4rem;
+  padding: 0.4rem 0 0 2.6rem;
+}
+.pull-quote::before {
+  content: '\201C';
+  position: absolute;
+  left: -0.4rem;
+  top: -1.6rem;
+  font-family: var(--display);
+  font-style: normal;
+  font-size: 6rem;
+  line-height: 1;
+  color: var(--maroon);
+  opacity: 0.75;
+  text-shadow: 0 0 22px rgba(122, 31, 43, 0.4);
 }
 .langs {
   display: flex;
@@ -507,7 +550,11 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
   margin-top: clamp(2.5rem, 5vw, 4rem);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  align-items: start;
   gap: var(--gap);
+}
+@media (min-width: 900px) {
+  .band-grid .member:nth-child(even) { transform: translateY(2.2rem); }
 }
 .member {
   background: var(--ink);
@@ -684,7 +731,6 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
    on hover — meant to feel more like a kept photograph than a file icon. */
 .tile {
   position: relative;
-  aspect-ratio: 1;
   background: var(--ink);
   border: 1px solid rgba(198, 162, 77, 0.28);
   border-radius: 6px;
@@ -692,6 +738,7 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
   padding: 0;
   margin: 0;
   display: block;
+  aspect-ratio: 1;
   cursor: pointer;
   box-shadow:
     0 0 0 1px rgba(198, 162, 77, 0.12) inset,
