@@ -1,6 +1,17 @@
+# Catch-all for regular assets (images, graphics, icons, fonts)
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
+# Target manifests safely
 /assets/*/manifest.json
   ! Cache-Control
   Cache-Control: public, max-age=300
+
+# OVERRIDE SPECIFICALLY FOR VIDEOS: Force range requests and drop immutable
+/assets/gallery/*.mp4
+  Accept-Ranges: bytes
+  Cache-Control: public, max-age=2592000
+
+/assets/live/*.mp4
+  Accept-Ranges: bytes
+  Cache-Control: public, max-age=2592000
