@@ -503,10 +503,14 @@ async function loadManifest(folder) {
 
 // ---------------------------------------------------------------------------
 // Background audio — drop tracks into assets/audio/ and they play as a
-// looping playlist. Autoplay-with-sound is blocked by every browser until
-// the visitor interacts with the page at least once, so this tries to start
-// on load (browsers allow that to fail quietly) and also on the very first
-// click/keypress/touch anywhere on the page, whichever comes first.
+// shuffled, looping playlist (a different running order each page load, so
+// it's not always the same track first). Autoplay-with-sound is blocked by
+// every browser until the visitor interacts with the page at least once —
+// that's a browser policy, not something any site can turn off. This tries
+// on load anyway (browsers let that fail quietly), then unlocks on the very
+// first genuine interaction anywhere on the page. Listening in the capture
+// phase and calling play() as the first line of the handler matters most on
+// mobile, where the window to use a gesture for audio is short and strict.
 // ---------------------------------------------------------------------------
 (function backgroundAudio() {
   const nav = document.getElementById('navAudio');
@@ -514,8 +518,15 @@ async function loadManifest(folder) {
   const muteBtn = document.getElementById('audioMuteBtn');
   if (!nav || !playBtn || !muteBtn) return;
 
-  loadManifest('audio').then((entries) => {
-    if (!entries.length) return; // no tracks yet — leave the controls hidden
+  loadManifest('audio').then((loaded) => {
+    if (!loaded.length) return; // no tracks yet — leave the controls hidden
+
+    // Shuffle into a random running order each page load (Fisher–Yates).
+    const entries = loaded.slice();
+    for (let i = entries.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [entries[i], entries[j]] = [entries[j], entries[i]];
+    }
 
     const audio = new Audio();
     audio.volume = 0.5;
@@ -525,19 +536,18 @@ async function loadManifest(folder) {
     let userPaused = false;
 
     function loadTrack(i) {
-      const entry = entries[i];
-      audio.src = `assets/audio/${encodeURIComponent(entry.file)}`;
+      audio.src = `assets/audio/${encodeURIComponent(entries[i].file)}`;
     }
+    loadTrack(index);
 
     function play() {
-      loadTrack(index);
-      audio.play().then(() => {
-        userPaused = false;
-        setPlayIcon();
-      }).catch(() => {
-        // Blocked until a real user gesture happens — the page-load and
-        // first-interaction attempts below will retry automatically.
-      });
+      const p = audio.play();
+      if (p && p.catch) {
+        p.catch(() => {
+          // Still blocked — the unlock listeners below will retry on the
+          // next real interaction.
+        });
+      }
     }
 
     function setPlayIcon() {
@@ -554,6 +564,7 @@ async function loadManifest(folder) {
 
     audio.addEventListener('ended', () => {
       index = (index + 1) % entries.length;
+      loadTrack(index);
       play();
     });
     audio.addEventListener('play', setPlayIcon);
@@ -574,18 +585,28 @@ async function loadManifest(folder) {
       setMuteIcon();
     });
 
-    // Try immediately (usually blocked before any interaction, that's fine),
-    // then retry once on the first real interaction anywhere on the page.
+    // Try immediately in case the browser already trusts this origin
+    // (returning visitors — see Chrome's Media Engagement Index), then fall
+    // back to unlocking on the first real interaction.
     play();
-    function tryResumeOnFirstInteraction() {
-      if (!userPaused && audio.paused) play();
-      document.removeEventListener('click', tryResumeOnFirstInteraction);
-      document.removeEventListener('keydown', tryResumeOnFirstInteraction);
-      document.removeEventListener('touchstart', tryResumeOnFirstInteraction);
+
+    let unlocked = false;
+    function unlock() {
+      if (unlocked || userPaused) return;
+      unlocked = true;
+      play(); // first line of the handler — no work before this
+      removeUnlockListeners();
     }
-    document.addEventListener('click', tryResumeOnFirstInteraction);
-    document.addEventListener('keydown', tryResumeOnFirstInteraction);
-    document.addEventListener('touchstart', tryResumeOnFirstInteraction);
+    function removeUnlockListeners() {
+      document.removeEventListener('pointerdown', unlock, true);
+      document.removeEventListener('touchend', unlock, true);
+      document.removeEventListener('mousedown', unlock, true);
+      document.removeEventListener('keydown', unlock, true);
+    }
+    document.addEventListener('pointerdown', unlock, true);
+    document.addEventListener('touchend', unlock, true);
+    document.addEventListener('mousedown', unlock, true);
+    document.addEventListener('keydown', unlock, true);
 
     setPlayIcon();
     setMuteIcon();
