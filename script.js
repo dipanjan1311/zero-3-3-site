@@ -469,3 +469,126 @@ async function loadManifest(folder) {
   createMediaSection('gallery', 'gallery', 'Studio');
   createMediaSection('live', 'live', 'Live performances');
 })();
+
+// ---------------------------------------------------------------------------
+// Scroll to top — appears once you're scrolled roughly past the halfway
+// point of the hero banner, follows the viewport, and hides again once
+// you're back near the top.
+// ---------------------------------------------------------------------------
+(function scrollTop() {
+  const btn = document.getElementById('scrollTopBtn');
+  const hero = document.querySelector('.hero');
+  if (!btn || !hero) return;
+
+  let ticking = false;
+  function updateVisibility() {
+    ticking = false;
+    const threshold = hero.offsetHeight * 0.5;
+    btn.classList.toggle('is-visible', window.scrollY > threshold);
+  }
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(updateVisibility);
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  updateVisibility();
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+// ---------------------------------------------------------------------------
+// Background audio — drop tracks into assets/audio/ and they play as a
+// looping playlist. Autoplay-with-sound is blocked by every browser until
+// the visitor interacts with the page at least once, so this tries to start
+// on load (browsers allow that to fail quietly) and also on the very first
+// click/keypress/touch anywhere on the page, whichever comes first.
+// ---------------------------------------------------------------------------
+(function backgroundAudio() {
+  const nav = document.getElementById('navAudio');
+  const playBtn = document.getElementById('audioPlayBtn');
+  const muteBtn = document.getElementById('audioMuteBtn');
+  if (!nav || !playBtn || !muteBtn) return;
+
+  loadManifest('audio').then((entries) => {
+    if (!entries.length) return; // no tracks yet — leave the controls hidden
+
+    const audio = new Audio();
+    audio.volume = 0.5;
+    audio.preload = 'auto';
+
+    let index = 0;
+    let userPaused = false;
+
+    function loadTrack(i) {
+      const entry = entries[i];
+      audio.src = `assets/audio/${encodeURIComponent(entry.file)}`;
+    }
+
+    function play() {
+      loadTrack(index);
+      audio.play().then(() => {
+        userPaused = false;
+        setPlayIcon();
+      }).catch(() => {
+        // Blocked until a real user gesture happens — the page-load and
+        // first-interaction attempts below will retry automatically.
+      });
+    }
+
+    function setPlayIcon() {
+      const playing = !audio.paused;
+      playBtn.innerHTML = playing ? '&#10074;&#10074;' : '&#9654;';
+      playBtn.setAttribute('aria-label', playing ? 'Pause music' : 'Play music');
+    }
+
+    function setMuteIcon() {
+      muteBtn.innerHTML = audio.muted ? '&#128263;' : '&#128266;';
+      muteBtn.classList.toggle('is-muted', audio.muted);
+      muteBtn.setAttribute('aria-label', audio.muted ? 'Unmute' : 'Mute');
+    }
+
+    audio.addEventListener('ended', () => {
+      index = (index + 1) % entries.length;
+      play();
+    });
+    audio.addEventListener('play', setPlayIcon);
+    audio.addEventListener('pause', setPlayIcon);
+
+    playBtn.addEventListener('click', () => {
+      if (audio.paused) {
+        userPaused = false;
+        play();
+      } else {
+        userPaused = true;
+        audio.pause();
+      }
+    });
+
+    muteBtn.addEventListener('click', () => {
+      audio.muted = !audio.muted;
+      setMuteIcon();
+    });
+
+    // Try immediately (usually blocked before any interaction, that's fine),
+    // then retry once on the first real interaction anywhere on the page.
+    play();
+    function tryResumeOnFirstInteraction() {
+      if (!userPaused && audio.paused) play();
+      document.removeEventListener('click', tryResumeOnFirstInteraction);
+      document.removeEventListener('keydown', tryResumeOnFirstInteraction);
+      document.removeEventListener('touchstart', tryResumeOnFirstInteraction);
+    }
+    document.addEventListener('click', tryResumeOnFirstInteraction);
+    document.addEventListener('keydown', tryResumeOnFirstInteraction);
+    document.addEventListener('touchstart', tryResumeOnFirstInteraction);
+
+    setPlayIcon();
+    setMuteIcon();
+    nav.hidden = false;
+  });
+})();

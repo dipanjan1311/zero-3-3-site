@@ -16,14 +16,20 @@
 
 <nav class="nav">
   <a href="#top" class="nav-mark"><img src="assets/branding/logo.png" alt="Zero-3-3" class="nav-logo"></a>
-  <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
-  <ul class="nav-links" id="navLinks">
-    <li><a href="#about">About</a></li>
-    <li><a href="#band">The band</a></li>
-    <li><a href="#gallery">Studio</a></li>
-    <li><a href="#live">Live performances</a></li>
-    <li><a href="#contact">Book us</a></li>
-  </ul>
+  <div class="nav-right">
+    <div class="nav-audio" id="navAudio" hidden>
+      <button class="nav-audio-btn" id="audioPlayBtn" type="button" aria-label="Play music">&#9654;</button>
+      <button class="nav-audio-btn" id="audioMuteBtn" type="button" aria-label="Mute">&#128266;</button>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about">About</a></li>
+      <li><a href="#band">The band</a></li>
+      <li><a href="#gallery">Studio</a></li>
+      <li><a href="#live">Live performances</a></li>
+      <li><a href="#contact">Book us</a></li>
+    </ul>
+  </div>
 </nav>
 
 <!-- ================= HERO ================= -->
@@ -408,6 +414,8 @@
     <div class="viewall-grid" id="viewallGrid"></div>
   </div>
 </div>
+
+<button class="scroll-top" id="scrollTopBtn" type="button" aria-label="Scroll to top">&#8593;</button>
 
 <script src="script.js"></script>
 </body>
