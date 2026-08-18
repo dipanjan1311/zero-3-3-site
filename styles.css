@@ -239,9 +239,10 @@ h1, h2, h3 {
   z-index: -1;
   perspective: 1400px;
   --cube-size: clamp(240px, 22vw, 340px);
+  --hero-anchor-top: 56.6%;
 }
 @media (max-width: 720px) {
-  .hero-anim { --cube-size: clamp(170px, 40vw, 260px); }
+  .hero-anim { --cube-size: clamp(150px, 34vw, 220px); --hero-anchor-top: 88%; }
 }
 .hero-reveal {
   position: absolute;
@@ -305,7 +306,7 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
 }
 @keyframes heroBurstDash { to { stroke-dashoffset:0; } }
 
-.hero-smoke { position:absolute; left:50%; top:56.6%; width:1px; height:1px; pointer-events:none; }
+.hero-smoke { position:absolute; left:50%; top:var(--hero-anchor-top); width:1px; height:1px; pointer-events:none; }
 .hero-smoke i {
   position:absolute; left:0; top:0; border-radius:50%; background:radial-gradient(circle, rgba(90,80,65,0.85), rgba(40,34,26,0) 70%);
   opacity:0; filter:blur(6px);
@@ -317,7 +318,7 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
   100% { opacity:0; transform:translate(-50%,-95%) scale(1.6); }
 }
 
-.hero-impact-flash { position:absolute; left:50%; top:56.6%; width:1px; height:1px; pointer-events:none; }
+.hero-impact-flash { position:absolute; left:50%; top:var(--hero-anchor-top); width:1px; height:1px; pointer-events:none; }
 .hero-impact-flash .glow {
   position:absolute; left:0; top:0; width:1000px; height:1000px; margin:-500px 0 0 -500px;
   background: radial-gradient(circle, rgba(255,252,240,1) 0%, rgba(255,241,196,0.9) 26%, rgba(240,212,136,0.45) 50%, rgba(198,162,77,0) 72%);
@@ -335,7 +336,7 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
   0% { opacity:0; } 6% { opacity:0.92; } 16% { opacity:0.15; } 26% { opacity:0.55; } 40% { opacity:0; } 100% { opacity:0; }
 }
 
-.hero-cube-stage { position:absolute; left:50%; top:56.6%; width:1px; height:1px; }
+.hero-cube-stage { position:absolute; left:50%; top:var(--hero-anchor-top); width:1px; height:1px; }
 .hero-cube-drop {
   position:absolute; left:0; top:0; transform:translate(-50%,-62%);
   opacity:0;
@@ -548,13 +549,10 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
 .band-head h2 { font-size: clamp(2rem, 4.5vw, 3.2rem); margin-top: 0.6rem; }
 .band-grid {
   margin-top: clamp(2.5rem, 5vw, 4rem);
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  align-items: start;
-  gap: var(--gap);
-}
-@media (min-width: 900px) {
-  .band-grid .member:nth-child(even) { transform: translateY(2.2rem); }
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.25rem;
 }
 .member {
   background: var(--ink);
@@ -563,6 +561,9 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  flex: 1 1 calc((100% - 4 * 1.25rem) / 5);
+  min-width: 195px;
+  max-width: 260px;
 }
 .member-photo {
   aspect-ratio: 4 / 5;
@@ -691,25 +692,37 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
    ========================================================================== */
 .past-members-grid {
   margin-top: clamp(2.5rem, 5vw, 4rem);
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: clamp(1.4rem, 3vw, 2.2rem);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.25rem;
+}
+.past-member {
+  text-align: center;
+  flex: 1 1 calc((100% - 4 * 1.25rem) / 5);
+  min-width: 140px;
+  max-width: 190px;
 }
 .past-member-photo {
-  position: relative;
-  aspect-ratio: 4 / 5;
-  border-radius: 6px;
+  aspect-ratio: 1;
+  width: 100%;
+  margin: 0 auto 1rem;
   overflow: hidden;
-  background: var(--ink);
-  border: 1px solid rgba(198, 162, 77, 0.28);
-  box-shadow:
-    0 0 0 1px rgba(198, 162, 77, 0.12) inset,
-    0 10px 24px rgba(0, 0, 0, 0.45);
-  margin-bottom: 0.9rem;
+  background: var(--ink-raised);
+  border: 3px double var(--gold);
+  border-radius: 50%;
+  padding: 3px;
+  box-shadow: 0 0 0 1px rgba(198, 162, 77, 0.25), 0 8px 20px rgba(0, 0, 0, 0.5);
 }
 .past-member-photo img {
   width: 100%; height: 100%; object-fit: cover;
+  display: block;
   filter: grayscale(0.5) contrast(1.05);
+  transition: transform 0.5s ease, filter 0.5s ease;
+}
+.past-member:hover .past-member-photo img {
+  transform: scale(1.05);
+  filter: grayscale(0) contrast(1.05);
 }
 .past-member-name {
   font-family: var(--display);
@@ -991,18 +1004,19 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
 /* ==========================================================================
    Contact
    ========================================================================== */
-.contact-grid {
+.contact-info {
   display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
+  grid-template-columns: 1.3fr auto;
   gap: clamp(2rem, 6vw, 5rem);
+  align-items: end;
 }
-@media (max-width: 800px) {
-  .contact-grid { grid-template-columns: 1fr; }
+@media (max-width: 700px) {
+  .contact-info { grid-template-columns: 1fr; }
 }
 .contact-info h2 { font-size: clamp(2rem, 4.5vw, 3rem); margin-top: 0.6rem; }
-.contact-info p { color: var(--bone-dim); margin-top: 1.1rem; max-width: 26rem; }
+.contact-info p { color: var(--bone-dim); margin-top: 1.1rem; max-width: 30rem; }
+.contact-cta { margin-top: 1.8rem; }
 .contact-links {
-  margin-top: 1.8rem;
   list-style: none;
   padding: 0;
   font-family: var(--mono);
@@ -1011,45 +1025,6 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
 .contact-links li { margin-top: 0.6rem; }
 .contact-links a { color: var(--bone); text-decoration: none; border-bottom: 1px solid var(--gold); }
 .contact-links a:hover { color: var(--gold-bright); }
-
-form.contact-form {
-  display: grid;
-  gap: 1.1rem;
-}
-.field { display: flex; flex-direction: column; gap: 0.45rem; }
-.field label {
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--bone-dim);
-}
-.field input,
-.field select,
-.field textarea {
-  background: var(--ink);
-  border: 1px solid var(--ink-raised);
-  color: var(--bone);
-  font-family: var(--body);
-  font-size: 0.95rem;
-  padding: 0.75rem 0.9rem;
-  border-radius: var(--radius);
-}
-.field input:focus,
-.field select:focus,
-.field textarea:focus {
-  border-color: var(--gold);
-  outline: none;
-}
-.field textarea { resize: vertical; min-height: 110px; }
-.form-note {
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  color: var(--bone-dim);
-  border: 1px dashed var(--maroon);
-  padding: 0.7rem 0.9rem;
-  border-radius: var(--radius);
-}
 
 /* ==========================================================================
    Footer
