@@ -25,6 +25,7 @@ const path = require('path');
 
 const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
 const VIDEO_EXTENSIONS = ['.mp4', '.webm', '.mov', '.m4v'];
+const MAX_BYTES = 24 * 1024 * 1024; // Cloudflare Pages caps individual assets at 25 MiB — leave a little headroom
 
 // Which folders to scan, and which kinds of media each one accepts.
 const TARGETS = [
@@ -41,6 +42,8 @@ function classify(filename) {
 }
 
 function run() {
+  let hadOversized = false;
+
   for (const target of TARGETS) {
     const dirPath = path.join(process.cwd(), target.dir);
 
@@ -53,6 +56,18 @@ function run() {
       .filter((name) => !name.startsWith('.') && name !== 'manifest.json')
       .map((name) => ({ file: name, type: classify(name) }))
       .filter((entry) => entry.type && target.kinds.includes(entry.type))
+      .filter((entry) => {
+        const size = fs.statSync(path.join(dirPath, entry.file)).size;
+        if (size > MAX_BYTES) {
+          hadOversized = true;
+          console.warn(
+            `[manifests] SKIPPING ${target.dir}/${entry.file} — ${(size / 1024 / 1024).toFixed(1)} MiB, ` +
+            `over Cloudflare's 25 MiB per-file limit. Compress it (see README) and push again.`
+          );
+          return false;
+        }
+        return true;
+      })
       .sort((a, b) => a.file.localeCompare(b.file, undefined, { numeric: true, sensitivity: 'base' }));
 
     const manifestPath = path.join(dirPath, 'manifest.json');
@@ -61,6 +76,10 @@ function run() {
     console.log(
       `[manifests] ${target.dir}/manifest.json — ${entries.length} file${entries.length === 1 ? '' : 's'}`
     );
+  }
+
+  if (hadOversized) {
+    console.warn('[manifests] One or more files were skipped for being too large. The rest of the site will still deploy fine.');
   }
 }
 
