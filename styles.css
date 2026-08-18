@@ -926,12 +926,17 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
 }
 .viewall-close:hover { border-color: var(--gold); }
 .viewall-grid {
+  --tile-size: 150px;
   padding: 1.6rem;
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  grid-auto-rows: minmax(140px, 1fr);
+  grid-template-columns: repeat(auto-fill, var(--tile-size));
+  grid-auto-rows: var(--tile-size);
+  justify-content: center;
   gap: 0.6rem;
+}
+@media (max-width: 720px) {
+  .viewall-grid { --tile-size: 100px; padding: 1rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .viewall-modal { transition: none; }
