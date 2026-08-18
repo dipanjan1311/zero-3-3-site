@@ -250,7 +250,7 @@ async function loadManifest(folder) {
     if (entry.type === 'video') {
       const thumb = entry.poster
         ? `<img src="assets/${folder}/${encodeURIComponent(entry.poster)}" loading="lazy" alt="">`
-        : `<video src="${src}" muted preload="metadata" playsinline></video>`;
+        : `<div class="tile-video-placeholder" data-lazy-video="${src}" aria-hidden="true"></div>`;
       return `<button class="tile tile-video" type="button" data-index="${index}" aria-label="Open video">
         ${thumb}
         <span class="play-badge" aria-hidden="true">&#9654;</span>
@@ -259,6 +259,29 @@ async function loadManifest(folder) {
     return `<button class="tile" type="button" data-index="${index}" aria-label="Open photo">
       <img src="${src}" loading="lazy" alt="">
     </button>`;
+  }
+
+  // For videos with no poster yet: rather than loading every one of them at
+  // once (which is what caused the slow/glitchy grid), each one only turns
+  // into a real, playable-preview <video> once it's about to actually be
+  // seen — scrolled into the visible area of whichever container it's in.
+  function observeLazyVideos(container, rootEl) {
+    const placeholders = container.querySelectorAll('[data-lazy-video]');
+    if (!placeholders.length) return;
+    const observer = new IntersectionObserver((observed) => {
+      observed.forEach((item) => {
+        if (!item.isIntersecting) return;
+        const el = item.target;
+        const video = document.createElement('video');
+        video.src = el.dataset.lazyVideo;
+        video.muted = true;
+        video.preload = 'metadata';
+        video.playsInline = true;
+        el.replaceWith(video);
+        observer.unobserve(el);
+      });
+    }, { root: rootEl || null, rootMargin: '0px' });
+    placeholders.forEach((el) => observer.observe(el));
   }
 
   function renderLightboxStage() {
@@ -403,6 +426,7 @@ async function loadManifest(folder) {
         });
       });
       viewallModal.classList.add('open');
+      requestAnimationFrame(() => observeLazyVideos(viewallGrid, viewallGrid));
       document.body.style.overflow = 'hidden';
       activeViewAllCloseFn = closeViewAll;
     }
@@ -420,6 +444,7 @@ async function loadManifest(folder) {
     function renderMarquee() {
       const html = entries.map((e, i) => tileHTML(e, folder, i)).join('');
       track.innerHTML = html + html; // duplicated once for a seamless loop
+      observeLazyVideos(track, viewport);
       track.querySelectorAll('.tile').forEach((tile) => {
         const i = Number(tile.dataset.index);
         tile.addEventListener('click', () => openItem(i, tile, false));
