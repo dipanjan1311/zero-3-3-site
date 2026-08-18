@@ -11,9 +11,9 @@
   --bone-dim: #a89c85;
   --maroon: #7a1f2b;
 
-  --display: "Fraunces", Georgia, serif;
-  --body: "Inter", -apple-system, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --display: "Bodoni Moda", Georgia, serif;
+  --body: "Work Sans", -apple-system, sans-serif;
+  --mono: "Space Mono", ui-monospace, monospace;
 
   --gap: clamp(1.25rem, 3vw, 2.5rem);
   --edge: clamp(1.25rem, 5vw, 4rem);
@@ -65,6 +65,22 @@ h1, h2, h3 {
   margin: 0;
 }
 
+.section h2 {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.5rem;
+}
+.section h2::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 3.2rem;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold-bright), var(--maroon) 130%);
+  box-shadow: 0 0 12px rgba(232, 201, 122, 0.5);
+}
+
 .section {
   padding: clamp(3.5rem, 9vw, 7rem) var(--edge);
   max-width: 1200px;
@@ -83,11 +99,12 @@ h1, h2, h3 {
 }
 .z-beam path {
   fill: none;
-  stroke: var(--gold);
+  stroke: var(--gold-bright);
   stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
-  opacity: 0.55;
+  opacity: 0.7;
+  filter: drop-shadow(0 0 4px rgba(232, 201, 122, 0.65));
 }
 .z-beam.reveal path {
   stroke-dasharray: 1300;
@@ -196,7 +213,10 @@ h1, h2, h3 {
   line-height: 0.95;
   letter-spacing: -0.01em;
 }
-.hero h1 .accent { color: var(--gold-bright); }
+.hero h1 .accent {
+  color: var(--gold-bright);
+  text-shadow: 0 0 30px rgba(232, 201, 122, 0.55), 0 0 70px rgba(198, 162, 77, 0.3);
+}
 .hero-tagline {
   max-width: 34rem;
   margin-top: 1.4rem;
@@ -416,13 +436,23 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
   color: var(--void);
   border-color: var(--gold);
 }
-.btn-solid:hover { background: var(--gold-bright); border-color: var(--gold-bright); }
+.btn-solid:hover {
+  background: var(--gold-bright);
+  border-color: var(--gold-bright);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(198, 162, 77, 0.4);
+}
 .btn-outline {
   background: transparent;
   color: var(--bone);
   border-color: var(--bone-dim);
 }
-.btn-outline:hover { border-color: var(--gold-bright); color: var(--gold-bright); }
+.btn-outline:hover {
+  border-color: var(--gold-bright);
+  color: var(--gold-bright);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(198, 162, 77, 0.22);
+}
 
 /* ==========================================================================
    About
@@ -444,13 +474,26 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
 .about-body { margin-top: 1.6rem; color: var(--bone-dim); font-size: 1.05rem; }
 .about-body p + p { margin-top: 1rem; }
 .pull-quote {
+  position: relative;
   font-family: var(--display);
   font-style: italic;
   font-size: clamp(1.3rem, 2.6vw, 1.7rem);
   color: var(--gold-bright);
   line-height: 1.4;
-  border-left: 2px solid var(--gold);
-  padding-left: 1.4rem;
+  padding: 0.4rem 0 0 2.6rem;
+}
+.pull-quote::before {
+  content: '\201C';
+  position: absolute;
+  left: -0.4rem;
+  top: -1.6rem;
+  font-family: var(--display);
+  font-style: normal;
+  font-size: 6rem;
+  line-height: 1;
+  color: var(--maroon);
+  opacity: 0.75;
+  text-shadow: 0 0 22px rgba(122, 31, 43, 0.4);
 }
 .langs {
   display: flex;
@@ -479,7 +522,11 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
   margin-top: clamp(2.5rem, 5vw, 4rem);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  align-items: start;
   gap: var(--gap);
+}
+@media (min-width: 900px) {
+  .band-grid .member:nth-child(even) { transform: translateY(2.2rem); }
 }
 .member {
   background: var(--ink);
@@ -551,6 +598,51 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
 .member-toggle:hover { color: var(--bone); }
 
 /* ==========================================================================
+   Past members
+   ========================================================================== */
+.alumni-grid {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--gap);
+}
+.alumnus { text-align: center; }
+.alumnus-photo {
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--ink-raised);
+  border: 3px double var(--gold);
+  border-radius: 50%;
+  padding: 3px;
+  box-shadow: 0 0 0 1px rgba(198, 162, 77, 0.25), 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+.alumnus-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.6);
+  transition: transform 0.5s ease, filter 0.5s ease;
+}
+.alumnus:hover .alumnus-photo img {
+  transform: scale(1.05);
+  filter: grayscale(0.1);
+}
+.alumnus-name {
+  font-family: var(--display);
+  font-size: 1.05rem;
+  color: var(--bone);
+  margin: 1rem 0 0;
+}
+.alumnus-role {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+  margin-top: 0.3rem;
+}
+
+/* ==========================================================================
    Gallery / Live / Shows — placeholder states
    ========================================================================== */
 .placeholder-panel {
@@ -569,21 +661,44 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
 .gallery-grid {
   margin-top: clamp(2.5rem, 5vw, 4rem);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  grid-auto-rows: 170px;
+  grid-auto-flow: dense;
+  gap: 0.9rem;
+}
+.gallery-grid .tile:nth-child(5n+1) { grid-column: span 2; grid-row: span 2; }
+@media (max-width: 560px) {
+  .gallery-grid .tile:nth-child(5n+1) { grid-column: span 1; grid-row: span 1; }
 }
 .gallery-grid .tile {
   position: relative;
-  aspect-ratio: 1;
   background: var(--ink);
-  border: 1px solid var(--ink-raised);
+  border: 1px solid rgba(198, 162, 77, 0.3);
   overflow: hidden;
   padding: 0;
   margin: 0;
   display: block;
   width: 100%;
+  height: 100%;
   cursor: pointer;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.4);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
 }
+.gallery-grid .tile::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(11,9,6,0.6), rgba(11,9,6,0) 42%);
+  opacity: 0.85;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.gallery-grid .tile:hover {
+  border-color: var(--gold-bright);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.55), 0 0 26px rgba(198, 162, 77, 0.4);
+  transform: translateY(-4px);
+  z-index: 2;
+}
+.gallery-grid .tile:hover::after { opacity: 0.3; }
 .gallery-grid .tile:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 2px;
@@ -591,30 +706,30 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
 .gallery-grid .tile img,
 .gallery-grid .tile video {
   width: 100%; height: 100%; object-fit: cover;
-  filter: grayscale(0.2);
+  filter: grayscale(0.25) contrast(1.05);
   display: block;
-  transition: transform 0.5s ease, filter 0.5s ease;
+  transition: transform 0.6s ease, filter 0.6s ease;
 }
 .gallery-grid .tile:hover img,
 .gallery-grid .tile:hover video {
-  transform: scale(1.04);
-  filter: grayscale(0);
-}
-.gallery-grid .tile-video::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(11,9,6,0.45), rgba(11,9,6,0) 40%);
-  pointer-events: none;
+  transform: scale(1.06);
+  filter: grayscale(0) contrast(1.05);
 }
 .gallery-grid .tile-video .play-badge {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  width: 44px; height: 44px; border-radius: 50%;
+  width: 48px; height: 48px; border-radius: 50%;
   background: rgba(11, 9, 6, 0.55);
   border: 1px solid rgba(232, 201, 122, 0.7);
   display: flex; align-items: center; justify-content: center;
   color: var(--gold-bright);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   pointer-events: none;
+  box-shadow: 0 0 18px rgba(198, 162, 77, 0.45);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.gallery-grid .tile-video:hover .play-badge {
+  transform: translate(-50%, -50%) scale(1.12);
+  box-shadow: 0 0 28px rgba(232, 201, 122, 0.6);
 }
 
 /* ==========================================================================
