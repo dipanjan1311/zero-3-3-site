@@ -573,6 +573,50 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
 /* ==========================================================================
    Gallery / Live / Shows — placeholder states
    ========================================================================== */
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.section-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding-bottom: 0.3rem;
+}
+.marquee-playpause {
+  width: 1.9rem;
+  height: 1.9rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid var(--ink-raised);
+  color: var(--gold-bright);
+  font-size: 0.6rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.marquee-playpause:hover { border-color: var(--gold); }
+.view-all-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--gold-bright);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.view-all-btn:hover { color: var(--bone); }
+
 .placeholder-panel {
   margin-top: clamp(2.5rem, 5vw, 4rem);
   border: 1px dashed var(--ink-raised);
@@ -586,13 +630,10 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
   max-width: 32rem;
   margin: 0.8rem auto 0;
 }
-.gallery-grid {
-  margin-top: clamp(2.5rem, 5vw, 4rem);
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.6rem;
-}
-.gallery-grid .tile {
+
+/* Shared tile styles — used inside both the scrolling marquee and the
+   "view all" grid. */
+.tile {
   position: relative;
   aspect-ratio: 1;
   background: var(--ink);
@@ -601,32 +642,31 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
   padding: 0;
   margin: 0;
   display: block;
-  width: 100%;
   cursor: pointer;
 }
-.gallery-grid .tile:focus-visible {
+.tile:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 2px;
 }
-.gallery-grid .tile img,
-.gallery-grid .tile video {
+.tile img,
+.tile video {
   width: 100%; height: 100%; object-fit: cover;
   filter: grayscale(0.2);
   display: block;
   transition: transform 0.5s ease, filter 0.5s ease;
 }
-.gallery-grid .tile:hover img,
-.gallery-grid .tile:hover video {
+.tile:hover img,
+.tile:hover video {
   transform: scale(1.04);
   filter: grayscale(0);
 }
-.gallery-grid .tile-video::before {
+.tile-video::before {
   content: '';
   position: absolute; inset: 0;
   background: linear-gradient(to top, rgba(11,9,6,0.45), rgba(11,9,6,0) 40%);
   pointer-events: none;
 }
-.gallery-grid .tile-video .play-badge {
+.tile-video .play-badge {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
   width: 44px; height: 44px; border-radius: 50%;
   background: rgba(11, 9, 6, 0.55);
@@ -638,7 +678,104 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
 }
 
 /* ==========================================================================
-   Media lightbox — full view for Gallery / Live tiles
+   Marquee — the single-row, auto-scrolling strip on the main page
+   ========================================================================== */
+.marquee-viewport {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+}
+.marquee-track {
+  display: flex;
+  gap: 0.6rem;
+  width: max-content;
+  animation: marqueeScroll var(--marquee-duration, 40s) linear infinite;
+}
+.marquee-track.paused { animation-play-state: paused; }
+.marquee-track .tile {
+  flex: none;
+  width: clamp(150px, 20vw, 240px);
+}
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}
+
+/* ==========================================================================
+   "View all" modal — full set of thumbnails in a scrollable grid.
+   Deliberately does NOT close on backdrop click — only the X button
+   (and Escape) close it, per the intended browsing behaviour.
+   ========================================================================== */
+.viewall-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 9, 6, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 95;
+  opacity: 0;
+  visibility: hidden;
+  padding: var(--edge);
+  transition: opacity 280ms ease, visibility 0s linear 280ms;
+}
+.viewall-modal.open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 280ms ease, visibility 0s linear 0s;
+}
+.viewall-panel {
+  background: var(--ink);
+  border: 1px solid var(--ink-raised);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 1400px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.viewall-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.6rem;
+  border-bottom: 1px solid var(--ink-raised);
+  flex-shrink: 0;
+}
+.viewall-header h3 {
+  font-family: var(--display);
+  font-size: 1.3rem;
+  color: var(--bone);
+}
+.viewall-close {
+  width: 2.3rem; height: 2.3rem;
+  background: var(--void);
+  color: var(--gold-bright);
+  border: 1px solid var(--ink-raised);
+  border-radius: 50%;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.viewall-close:hover { border-color: var(--gold); }
+.viewall-grid {
+  padding: 1.6rem;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.6rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .viewall-modal { transition: none; }
+}
+
+/* ==========================================================================
+   Media lightbox — full view for a single photo/video
    ========================================================================== */
 .media-lightbox {
   position: fixed;
@@ -658,16 +795,16 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
   transition: opacity 280ms ease, visibility 0s linear 0s;
 }
 .media-lightbox-stage {
-  max-width: 92vw;
-  max-height: 88vh;
+  max-width: 98vw;
+  max-height: 95vh;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .media-lightbox-stage img,
 .media-lightbox-stage video {
-  max-width: 92vw;
-  max-height: 88vh;
+  max-width: 98vw;
+  max-height: 95vh;
   width: auto;
   height: auto;
   border: 1px solid var(--ink-raised);
