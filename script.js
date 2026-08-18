@@ -77,19 +77,6 @@ if ('IntersectionObserver' in window && revealEls.length) {
   revealEls.forEach(el => el.classList.add('in-view'));
 }
 
-// Contact form — draft mode: no live endpoint connected yet
-const contactForm = document.getElementById('contactForm');
-if (contactForm) {
-  contactForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const note = contactForm.querySelector('.form-note');
-    if (note) {
-      note.textContent = 'This is a draft — the form isn\'t connected to an inbox yet, so nothing was sent. Wire up a form-handling endpoint before this goes live.';
-      note.style.borderColor = 'var(--gold)';
-    }
-  });
-}
-
 // ---------------------------------------------------------------------------
 // Shared helper: fetch a build-generated manifest.json listing whatever
 // photos/videos are sitting in a given assets/ folder. These files are
