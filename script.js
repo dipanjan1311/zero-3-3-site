@@ -188,12 +188,32 @@ async function loadManifest(folder) {
   const lightboxPrev = lightbox ? lightbox.querySelector('.media-lightbox-nav.prev') : null;
   const lightboxNext = lightbox ? lightbox.querySelector('.media-lightbox-nav.next') : null;
 
+  const viewallModal = document.getElementById('viewallModal');
+  const viewallTitle = document.getElementById('viewallTitle');
+  const viewallGrid = document.getElementById('viewallGrid');
+  const viewallClose = viewallModal ? viewallModal.querySelector('.viewall-close') : null;
+
   let activeEntries = [];
   let activeFolder = '';
   let activeIndex = 0;
   let lastFocusedTile = null;
+  let onLightboxCloseCallback = null; // resumes the right marquee / reopens "view all" on close
+  let activeViewAllCloseFn = null;    // whichever section's "view all" is currently open, if any
 
-  function renderStage() {
+  function tileHTML(entry, folder, index) {
+    const src = `assets/${folder}/${encodeURIComponent(entry.file)}`;
+    if (entry.type === 'video') {
+      return `<button class="tile tile-video" type="button" data-index="${index}" aria-label="Open video">
+        <video src="${src}" muted preload="metadata" playsinline></video>
+        <span class="play-badge" aria-hidden="true">&#9654;</span>
+      </button>`;
+    }
+    return `<button class="tile" type="button" data-index="${index}" aria-label="Open photo">
+      <img src="${src}" loading="lazy" alt="">
+    </button>`;
+  }
+
+  function renderLightboxStage() {
     if (!lightboxStage) return;
     const entry = activeEntries[activeIndex];
     if (!entry) return;
@@ -206,12 +226,13 @@ async function loadManifest(folder) {
     if (lightboxNext) lightboxNext.style.visibility = showNav ? 'visible' : 'hidden';
   }
 
-  function openLightbox(entries, folder, index, trigger) {
+  function openLightbox(entries, folder, index, trigger, onClose) {
     activeEntries = entries;
     activeFolder = folder;
     activeIndex = index;
     lastFocusedTile = trigger || null;
-    renderStage();
+    onLightboxCloseCallback = onClose || null;
+    renderLightboxStage();
     lightbox.classList.add('open');
     document.body.style.overflow = 'hidden';
     if (lightboxClose) lightboxClose.focus();
@@ -219,15 +240,21 @@ async function loadManifest(folder) {
 
   function closeLightbox() {
     lightbox.classList.remove('open');
-    document.body.style.overflow = '';
     lightboxStage.innerHTML = ''; // stop any playing video
     if (lastFocusedTile) lastFocusedTile.focus();
+    const cb = onLightboxCloseCallback;
+    onLightboxCloseCallback = null;
+    if (cb) {
+      cb();
+    } else {
+      document.body.style.overflow = '';
+    }
   }
 
   function stepLightbox(delta) {
     if (!activeEntries.length) return;
     activeIndex = (activeIndex + delta + activeEntries.length) % activeEntries.length;
-    renderStage();
+    renderLightboxStage();
   }
 
   if (lightbox) {
@@ -237,48 +264,135 @@ async function loadManifest(folder) {
     if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
     if (lightboxPrev) lightboxPrev.addEventListener('click', () => stepLightbox(-1));
     if (lightboxNext) lightboxNext.addEventListener('click', () => stepLightbox(1));
-    document.addEventListener('keydown', (e) => {
-      if (!lightbox.classList.contains('open')) return;
-      if (e.key === 'Escape') closeLightbox();
-      if (e.key === 'ArrowLeft') stepLightbox(-1);
-      if (e.key === 'ArrowRight') stepLightbox(1);
+  }
+
+  if (viewallClose) {
+    viewallClose.addEventListener('click', () => {
+      if (activeViewAllCloseFn) activeViewAllCloseFn();
     });
   }
 
-  function renderGrid(sectionId, folder) {
+  // Escape closes whichever is on top (lightbox first, then "view all");
+  // arrow keys navigate the lightbox when it's open.
+  document.addEventListener('keydown', (e) => {
+    const lightboxOpen = lightbox && lightbox.classList.contains('open');
+    if (e.key === 'Escape') {
+      if (lightboxOpen) {
+        closeLightbox();
+      } else if (activeViewAllCloseFn) {
+        activeViewAllCloseFn();
+      }
+      return;
+    }
+    if (lightboxOpen) {
+      if (e.key === 'ArrowLeft') stepLightbox(-1);
+      if (e.key === 'ArrowRight') stepLightbox(1);
+    }
+  });
+
+  const MARQUEE_SPEED_PX_PER_SEC = 40;
+
+  function createMediaSection(sectionId, folder, title) {
     const section = document.getElementById(sectionId);
     if (!section) return;
     const placeholder = section.querySelector('.placeholder-panel');
-    const grid = section.querySelector('.gallery-grid');
-    if (!grid) return;
+    const viewport = section.querySelector('.marquee-viewport');
+    const track = section.querySelector('.marquee-track');
+    const controls = section.querySelector('.section-controls');
+    const playPauseBtn = section.querySelector('.marquee-playpause');
+    const viewAllBtn = section.querySelector('.view-all-btn');
+    if (!viewport || !track) return;
 
-    loadManifest(folder).then((entries) => {
-      if (!entries.length) return; // leave the "coming soon" panel showing
+    let entries = [];
+    let userPaused = false;
+    let overlayOpenForThis = false; // true while the lightbox or "view all" is open because of this section
+    let hovering = false; // pausing on hover makes it easier to actually click a moving tile
 
-      grid.innerHTML = entries.map((entry, i) => {
-        const src = `assets/${folder}/${encodeURIComponent(entry.file)}`;
-        if (entry.type === 'video') {
-          return `<button class="tile tile-video" type="button" data-index="${i}" aria-label="Open video">
-            <video src="${src}" muted preload="metadata" playsinline></video>
-            <span class="play-badge" aria-hidden="true">&#9658;</span>
-          </button>`;
+    function updateScrollState() {
+      track.classList.toggle('paused', userPaused || overlayOpenForThis || hovering);
+    }
+
+    viewport.addEventListener('mouseenter', () => { hovering = true; updateScrollState(); });
+    viewport.addEventListener('mouseleave', () => { hovering = false; updateScrollState(); });
+
+    function setPlayPauseIcon() {
+      if (!playPauseBtn) return;
+      playPauseBtn.innerHTML = userPaused ? '&#9654;' : '&#10074;&#10074;';
+      playPauseBtn.setAttribute('aria-label', userPaused ? 'Resume scrolling' : 'Pause scrolling');
+    }
+
+    if (playPauseBtn) {
+      playPauseBtn.addEventListener('click', () => {
+        userPaused = !userPaused;
+        setPlayPauseIcon();
+        updateScrollState();
+      });
+    }
+
+    function openItem(index, trigger, fromViewAll) {
+      overlayOpenForThis = true;
+      updateScrollState();
+      openLightbox(entries, folder, index, trigger, () => {
+        if (fromViewAll) {
+          openViewAll();
+        } else {
+          overlayOpenForThis = false;
+          updateScrollState();
+          document.body.style.overflow = '';
         }
-        return `<button class="tile" type="button" data-index="${i}" aria-label="Open photo">
-          <img src="${src}" loading="lazy" alt="">
-        </button>`;
-      }).join('');
+      });
+    }
 
-      grid.querySelectorAll('.tile').forEach((tile) => {
+    function openViewAll() {
+      overlayOpenForThis = true;
+      updateScrollState();
+      viewallTitle.textContent = title;
+      viewallGrid.innerHTML = entries.map((e, i) => tileHTML(e, folder, i)).join('');
+      viewallGrid.querySelectorAll('.tile').forEach((tile) => {
         tile.addEventListener('click', () => {
-          openLightbox(entries, folder, Number(tile.dataset.index), tile);
+          viewallModal.classList.remove('open');
+          openItem(Number(tile.dataset.index), tile, true);
         });
       });
+      viewallModal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      activeViewAllCloseFn = closeViewAll;
+    }
 
-      grid.hidden = false;
+    function closeViewAll() {
+      viewallModal.classList.remove('open');
+      overlayOpenForThis = false;
+      updateScrollState();
+      document.body.style.overflow = '';
+      activeViewAllCloseFn = null;
+    }
+
+    if (viewAllBtn) viewAllBtn.addEventListener('click', openViewAll);
+
+    function renderMarquee() {
+      const html = entries.map((e, i) => tileHTML(e, folder, i)).join('');
+      track.innerHTML = html + html; // duplicated once for a seamless loop
+      track.querySelectorAll('.tile').forEach((tile) => {
+        const i = Number(tile.dataset.index);
+        tile.addEventListener('click', () => openItem(i, tile, false));
+      });
+      requestAnimationFrame(() => {
+        const setWidth = track.scrollWidth / 2;
+        const duration = Math.max(setWidth / MARQUEE_SPEED_PX_PER_SEC, 12);
+        track.style.setProperty('--marquee-duration', `${duration}s`);
+      });
+    }
+
+    loadManifest(folder).then((loaded) => {
+      entries = loaded;
+      if (!entries.length) return; // leave the "coming soon" panel showing
+      renderMarquee();
+      viewport.hidden = false;
+      if (controls) controls.hidden = false;
       if (placeholder) placeholder.hidden = true;
     });
   }
 
-  renderGrid('gallery', 'gallery');
-  renderGrid('live', 'live');
+  createMediaSection('gallery', 'gallery', 'Studio');
+  createMediaSection('live', 'live', 'Live');
 })();

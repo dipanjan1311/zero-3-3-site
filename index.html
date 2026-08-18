@@ -20,7 +20,7 @@
   <ul class="nav-links" id="navLinks">
     <li><a href="#about">About</a></li>
     <li><a href="#band">The band</a></li>
-    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#gallery">Studio</a></li>
     <li><a href="#live">Live performances</a></li>
     <li><a href="#contact">Book us</a></li>
   </ul>
@@ -285,13 +285,23 @@
 
 <!-- ================= GALLERY ================= -->
 <section class="section" id="gallery">
-  <p class="eyebrow reveal">On stage &amp; off</p>
-  <h2 class="reveal">Gallery</h2>
+  <div class="section-head">
+    <div>
+      <p class="eyebrow reveal">Behind the scenes</p>
+      <h2 class="reveal">Studio</h2>
+    </div>
+    <div class="section-controls" hidden>
+      <button class="marquee-playpause" type="button" aria-label="Pause scrolling">&#10074;&#10074;</button>
+      <button class="view-all-btn" type="button">View all</button>
+    </div>
+  </div>
   <div class="placeholder-panel reveal">
     <span class="eyebrow">Coming soon</span>
-    <p>The full photo gallery goes here once performance and event photos are exported and added — this section is wired up and ready for that drop-in.</p>
+    <p>Studio jams and off-stage moments go here once photos are added — this section is wired up and ready for that drop-in.</p>
   </div>
-  <div class="gallery-grid" hidden></div>
+  <div class="marquee-viewport" hidden>
+    <div class="marquee-track"></div>
+  </div>
 </section>
 
 <svg class="z-beam reveal" viewBox="0 0 1200 28" preserveAspectRatio="none" aria-hidden="true">
@@ -300,13 +310,23 @@
 
 <!-- ================= LIVE ================= -->
 <section class="section" id="live">
-  <p class="eyebrow reveal">Watch</p>
-  <h2 class="reveal">Live performances</h2>
+  <div class="section-head">
+    <div>
+      <p class="eyebrow reveal">Watch</p>
+      <h2 class="reveal">Live performances</h2>
+    </div>
+    <div class="section-controls" hidden>
+      <button class="marquee-playpause" type="button" aria-label="Pause scrolling">&#10074;&#10074;</button>
+      <button class="view-all-btn" type="button">View all</button>
+    </div>
+  </div>
   <div class="placeholder-panel reveal">
     <span class="eyebrow">Coming soon</span>
-    <p>Performance clips and highlight reels will live here — either self-hosted video or embedded straight from Instagram, depending on the clip.</p>
+    <p>Stage performances, promos, and highlight reels go here once clips are added — this section is wired up and ready for that drop-in.</p>
   </div>
-  <div class="gallery-grid" hidden></div>
+  <div class="marquee-viewport" hidden>
+    <div class="marquee-track"></div>
+  </div>
 </section>
 
 <svg class="z-beam reveal" viewBox="0 0 1200 28" preserveAspectRatio="none" aria-hidden="true">
@@ -348,7 +368,7 @@
       <p class="eyebrow reveal">Get in touch</p>
       <h2 class="reveal">Book Zero-3-3</h2>
       <p class="reveal">For weddings, festivals, private events, or general inquiries — send a message and the band will get back to you.</p>
-      <a class="btn btn-solid contact-cta reveal" href="https://ig.me/m/enaghosh" target="_blank" rel="noopener">Message on Instagram</a>
+      <a class="btn btn-solid contact-cta reveal" href="https://ig.me/m/zero33theband" target="_blank" rel="noopener">Message on Instagram</a>
     </div>
     <ul class="contact-links reveal">
       <li><a href="https://www.instagram.com/zero33theband" target="_blank" rel="noopener">@zero33theband on Instagram</a></li>
@@ -360,7 +380,7 @@
 
 <footer>
   <img src="assets/branding/logo.png" alt="Zero-3-3" class="footer-mark">
-  <span class="footer-meta">Zero-3-3 &middot; Montreal &middot; Draft site</span>
+  <span class="footer-meta">Zero-3-3 &middot; Montreal</span>
   <div class="footer-links">
     <a href="https://www.instagram.com/zero33theband" target="_blank" rel="noopener">Instagram</a>
     <a href="https://www.youtube.com/@zero33theband" target="_blank" rel="noopener">YouTube</a>
@@ -386,6 +406,16 @@
   <button class="media-lightbox-nav prev" type="button" aria-label="Previous">&#8592;</button>
   <div class="media-lightbox-stage" id="mediaLightboxStage"></div>
   <button class="media-lightbox-nav next" type="button" aria-label="Next">&#8594;</button>
+</div>
+
+<div class="viewall-modal" id="viewallModal" role="dialog" aria-modal="true" aria-labelledby="viewallTitle">
+  <div class="viewall-panel">
+    <div class="viewall-header">
+      <h3 id="viewallTitle"></h3>
+      <button class="viewall-close" type="button" aria-label="Close">&times;</button>
+    </div>
+    <div class="viewall-grid" id="viewallGrid"></div>
+  </div>
 </div>
 
 <script src="script.js"></script>
