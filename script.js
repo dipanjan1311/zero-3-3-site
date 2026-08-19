@@ -5,9 +5,8 @@
 // play (no duplicate animation markup), then hands the same, already-settled
 // element back to the hero once the visitor clicks through — so the main
 // hero never has to replay anything, it just already looks the way it will.
-// Shows once per browser tab session, not on every reload.
+// Always shows — every load, every refresh — it's the fixed entry point.
 // ---------------------------------------------------------------------------
-const SPLASH_SESSION_KEY = 'z33-splash-seen';
 (function initSplash() {
   const splash = document.getElementById('splash');
   const splashContent = document.getElementById('splashContent');
@@ -15,13 +14,6 @@ const SPLASH_SESSION_KEY = 'z33-splash-seen';
   const heroAnimEl = document.querySelector('.hero-anim');
   const heroEl = document.querySelector('.hero');
   if (!splash || !splashContent || !splashEnter || !heroAnimEl || !heroEl) return;
-
-  let seen = false;
-  try { seen = sessionStorage.getItem(SPLASH_SESSION_KEY) === '1'; } catch (e) { /* storage unavailable — just show it */ }
-  if (seen) {
-    splash.remove();
-    return;
-  }
 
   document.documentElement.classList.add('splash-active');
   splash.insertBefore(heroAnimEl, splashContent);
@@ -32,7 +24,6 @@ const SPLASH_SESSION_KEY = 'z33-splash-seen';
   requestAnimationFrame(() => splashContent.classList.add('is-ready'));
 
   splashEnter.addEventListener('click', () => {
-    try { sessionStorage.setItem(SPLASH_SESSION_KEY, '1'); } catch (e) { /* fine to skip persisting */ }
     splash.classList.add('is-leaving');
     heroEl.insertBefore(heroAnimEl, heroEl.firstChild);
     document.documentElement.classList.remove('splash-active');
