@@ -335,7 +335,7 @@ h1, h2, h3 {
   --hero-anchor-top: 56.6%;
 }
 @media (max-width: 720px) {
-  .hero-anim { --cube-size: clamp(150px, 34vw, 220px); --hero-anchor-top: 88%; }
+  .hero-anim { --cube-size: clamp(150px, 34vw, 220px); --hero-anchor-top: 50%; }
 }
 .hero-reveal {
   position: absolute;

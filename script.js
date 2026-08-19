@@ -26,21 +26,17 @@ const SPLASH_SESSION_KEY = 'z33-splash-seen';
   document.documentElement.classList.add('splash-active');
   splash.insertBefore(heroAnimEl, splashContent);
 
-  function ready() {
-    splashContent.classList.add('is-ready');
-  }
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    ready();
-  } else {
-    document.addEventListener('hero:revealed', ready, { once: true });
-    setTimeout(ready, 11000); // safety net, in case the reveal's own event is ever missed
-  }
+  // Button + microcopy are visible right away — no need to wait for the
+  // animation to finish before someone can enter. The rAF just gives the
+  // opening fade-in something to transition from.
+  requestAnimationFrame(() => splashContent.classList.add('is-ready'));
 
   splashEnter.addEventListener('click', () => {
     try { sessionStorage.setItem(SPLASH_SESSION_KEY, '1'); } catch (e) { /* fine to skip persisting */ }
     splash.classList.add('is-leaving');
     heroEl.insertBefore(heroAnimEl, heroEl.firstChild);
     document.documentElement.classList.remove('splash-active');
+    document.dispatchEvent(new CustomEvent('hero:enter'));
     setTimeout(() => splash.remove(), 900);
   });
 })();
@@ -199,6 +195,9 @@ async function loadManifest(folder) {
   if (!heroAnimEl || !galleryEl || !revealEl) return;
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // True only while the splash is actively showing this animation for the
+  // first time — see initSplash, which sets this class for exactly that case.
+  const splashGating = document.documentElement.classList.contains('splash-active');
 
   loadManifest('hero-gallery').then((entries) => {
     galleryEl.innerHTML = entries.map((entry) =>
@@ -214,7 +213,7 @@ async function loadManifest(folder) {
         galleryEl.classList.add('is-visible');
         slides[0].classList.add('is-visible');
       }
-      return; // the splash handles its own "ready" state for reduced motion
+      return;
     }
 
     const FADE_MS = 900;
@@ -243,27 +242,43 @@ async function loadManifest(folder) {
       setTimeout(replayReveal, FADE_MS);
     }
 
+    // Fades the settled reveal out and, if there are hero-gallery photos,
+    // starts the crossfade loop. Only ever called once for the very first
+    // reveal (either immediately, if there's no splash to wait for, or via
+    // the 'hero:enter' signal once the visitor actually enters the site) —
+    // and unconditionally for every later cycle of the ongoing loop.
+    function settleAndAdvance() {
+      revealEl.classList.add('is-hidden');
+      if (slides.length) setTimeout(playGallery, FADE_MS);
+    }
+
     function replayReveal() {
       const fresh = revealEl.cloneNode(true);
       fresh.classList.remove('is-hidden');
       revealEl.parentNode.replaceChild(fresh, revealEl);
       revealEl = fresh;
-      watchReveal();
+      watchReveal(false);
     }
 
-    function watchReveal() {
+    function watchReveal(isFirstTime) {
       const cubeDrop = revealEl.querySelector('.hero-cube-drop');
       if (!cubeDrop) return;
       cubeDrop.addEventListener('animationend', function onEnd(e) {
         if (e.animationName !== 'heroCubeZoom') return;
         cubeDrop.removeEventListener('animationend', onEnd);
-        revealEl.classList.add('is-hidden');
-        document.dispatchEvent(new CustomEvent('hero:revealed'));
-        if (slides.length) setTimeout(playGallery, FADE_MS);
+        if (isFirstTime) {
+          document.dispatchEvent(new CustomEvent('hero:revealed'));
+          if (splashGating) return; // hold on the settled cube — the splash is still up
+        }
+        settleAndAdvance();
       });
     }
 
-    watchReveal();
+    if (splashGating) {
+      document.addEventListener('hero:enter', settleAndAdvance, { once: true });
+    }
+
+    watchReveal(true);
   });
 })();
 
