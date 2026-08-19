@@ -643,22 +643,34 @@ async function loadManifest(folder) {
     // back to unlocking on the first real interaction.
     play();
 
+    // 'click' is the one event type Chrome's own developers explicitly
+    // recommend for this, specifically because which other events count as
+    // valid "user activation" isn't consistent across browsers/devices —
+    // pointerdown/touchend/mousedown are not guaranteed to qualify the same
+    // way everywhere. 'keydown' is kept alongside it for keyboard users.
+    // Listeners are only removed once a play() attempt actually succeeds —
+    // never optimistically beforehand — so if an earlier, less-reliable
+    // event in the same gesture fails silently, the next real interaction
+    // still gets its own chance rather than finding the listener gone.
     let unlocked = false;
     function unlock() {
       if (unlocked || userPaused) return;
-      unlocked = true;
-      play(); // first line of the handler — no work before this
-      removeUnlockListeners();
+      const p = audio.play();
+      if (p && p.then) {
+        p.then(() => {
+          unlocked = true;
+          removeUnlockListeners();
+        }).catch(() => { /* this attempt didn't count — leave listeners active to retry */ });
+      } else {
+        unlocked = true;
+        removeUnlockListeners();
+      }
     }
     function removeUnlockListeners() {
-      document.removeEventListener('pointerdown', unlock, true);
-      document.removeEventListener('touchend', unlock, true);
-      document.removeEventListener('mousedown', unlock, true);
+      document.removeEventListener('click', unlock, true);
       document.removeEventListener('keydown', unlock, true);
     }
-    document.addEventListener('pointerdown', unlock, true);
-    document.addEventListener('touchend', unlock, true);
-    document.addEventListener('mousedown', unlock, true);
+    document.addEventListener('click', unlock, true);
     document.addEventListener('keydown', unlock, true);
 
     setPlayIcon();
