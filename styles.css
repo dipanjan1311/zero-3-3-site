@@ -26,6 +26,7 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+html.splash-active { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
@@ -216,6 +217,68 @@ h1, h2, h3 {
 /* ==========================================================================
    Hero
    ========================================================================== */
+/* ==========================================================================
+   Splash — one-time entry screen. Borrows the actual .hero-anim element for
+   its single play (see script.js), so there's no duplicate animation markup
+   and the main hero underneath is naturally already settled once this goes
+   away — nothing to keep in sync, no risk of it looking different.
+   ========================================================================== */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: var(--void);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: clamp(3rem, 10vh, 6rem);
+  overflow: hidden;
+  transition: transform 0.8s cubic-bezier(0.6, 0, 0.3, 1);
+}
+.splash.is-leaving { transform: translateY(-100%); }
+.splash-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.splash-content.is-ready {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.splash-hint {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  margin-bottom: 1rem;
+}
+.splash-enter {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--void);
+  background: var(--gold);
+  border: none;
+  padding: 0.85rem 2.2rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.splash-enter:hover { background: var(--gold-bright); transform: translateY(-1px); }
+@media (prefers-reduced-motion: reduce) {
+  .splash { transition: opacity 0.4s ease; }
+  .splash.is-leaving { transform: none; opacity: 0; }
+  .splash-content { transition: opacity 0.4s ease; transform: none; }
+}
+
 .hero {
   position: relative;
   min-height: 100svh;

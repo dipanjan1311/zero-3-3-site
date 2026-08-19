@@ -1,3 +1,50 @@
+// ---------------------------------------------------------------------------
+// Splash — the very first thing that runs, before anything else, so the real
+// hero animation gets moved into the splash before the browser paints it in
+// the wrong place. It borrows the actual .hero-anim element for its one-time
+// play (no duplicate animation markup), then hands the same, already-settled
+// element back to the hero once the visitor clicks through — so the main
+// hero never has to replay anything, it just already looks the way it will.
+// Shows once per browser tab session, not on every reload.
+// ---------------------------------------------------------------------------
+const SPLASH_SESSION_KEY = 'z33-splash-seen';
+(function initSplash() {
+  const splash = document.getElementById('splash');
+  const splashContent = document.getElementById('splashContent');
+  const splashEnter = document.getElementById('splashEnter');
+  const heroAnimEl = document.querySelector('.hero-anim');
+  const heroEl = document.querySelector('.hero');
+  if (!splash || !splashContent || !splashEnter || !heroAnimEl || !heroEl) return;
+
+  let seen = false;
+  try { seen = sessionStorage.getItem(SPLASH_SESSION_KEY) === '1'; } catch (e) { /* storage unavailable — just show it */ }
+  if (seen) {
+    splash.remove();
+    return;
+  }
+
+  document.documentElement.classList.add('splash-active');
+  splash.insertBefore(heroAnimEl, splashContent);
+
+  function ready() {
+    splashContent.classList.add('is-ready');
+  }
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    ready();
+  } else {
+    document.addEventListener('hero:revealed', ready, { once: true });
+    setTimeout(ready, 11000); // safety net, in case the reveal's own event is ever missed
+  }
+
+  splashEnter.addEventListener('click', () => {
+    try { sessionStorage.setItem(SPLASH_SESSION_KEY, '1'); } catch (e) { /* fine to skip persisting */ }
+    splash.classList.add('is-leaving');
+    heroEl.insertBefore(heroAnimEl, heroEl.firstChild);
+    document.documentElement.classList.remove('splash-active');
+    setTimeout(() => splash.remove(), 900);
+  });
+})();
+
 // Mobile nav toggle
 const navToggle = document.getElementById('navToggle');
 const navLinks = document.getElementById('navLinks');
@@ -167,15 +214,14 @@ async function loadManifest(folder) {
         galleryEl.classList.add('is-visible');
         slides[0].classList.add('is-visible');
       }
-      return;
+      return; // the splash handles its own "ready" state for reduced motion
     }
-
-    if (!slides.length) return; // no photos yet — reveal plays once and rests, as before
 
     const FADE_MS = 900;
     const HOLD_MS = 5000;
 
     function playGallery() {
+      if (!slides.length) return;
       galleryEl.classList.add('is-visible');
       let i = 0;
       (function step() {
@@ -212,7 +258,8 @@ async function loadManifest(folder) {
         if (e.animationName !== 'heroCubeZoom') return;
         cubeDrop.removeEventListener('animationend', onEnd);
         revealEl.classList.add('is-hidden');
-        setTimeout(playGallery, FADE_MS);
+        document.dispatchEvent(new CustomEvent('hero:revealed'));
+        if (slides.length) setTimeout(playGallery, FADE_MS);
       });
     }
 
