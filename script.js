@@ -571,70 +571,198 @@ async function loadManifest(folder) {
   const muteBtn = document.getElementById('audioMuteBtn');
   if (!nav || !playBtn || !muteBtn) return;
 
+  const TRACK_CAP_SECONDS = 60;
+  const CROSSFADE_SECONDS = 5;
+  const BASE_VOLUME = 0.5;
+
   loadManifest('audio').then((loaded) => {
     if (!loaded.length) return; // no tracks yet — leave the controls hidden
 
-    // Shuffle into a random running order each page load (Fisher–Yates).
-    const entries = loaded.slice();
-    for (let i = entries.length - 1; i > 0; i--) {
+    // Shuffle into a random running order each page load (Fisher–Yates),
+    // then just keep looping that same order for the rest of the session —
+    // never stops, never re-shuffles mid-session.
+    const playlist = loaded.slice();
+    for (let i = playlist.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [entries[i], entries[j]] = [entries[j], entries[i]];
+      [playlist[i], playlist[j]] = [playlist[j], playlist[i]];
     }
 
-    const audio = new Audio();
-    audio.volume = 0.5;
-    audio.preload = 'auto';
+    // Two alternating players so the outgoing track can fade out while the
+    // incoming one fades in at the same time — a single <audio> element
+    // can't play two overlapping sounds.
+    //
+    // Fades are done with the Web Audio API (a GainNode per player) rather
+    // than by animating .volume with requestAnimationFrame. This matters:
+    // RAF is deliberately throttled or fully paused by the browser in a
+    // backgrounded/inactive tab (screen locked, switched to another app) —
+    // exactly when background music most needs to keep working. A GainNode
+    // ramp is scheduled against the audio hardware's own clock, so it keeps
+    // running correctly regardless of tab visibility.
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContextClass();
+    const players = [new Audio(), new Audio()];
+    const gains = players.map(() => audioCtx.createGain());
+    players.forEach((p, i) => {
+      p.preload = 'auto';
+      p.volume = 1; // fixed — actual loudness is controlled entirely via the gain node below
+      p.crossOrigin = 'anonymous';
+      const source = audioCtx.createMediaElementSource(p);
+      source.connect(gains[i]);
+      gains[i].connect(audioCtx.destination);
+      gains[i].gain.value = 0;
+    });
 
-    let index = 0;
+    let activeIdx = 0;
+    let trackIndex = 0;
     let userPaused = false;
+    let muted = false;
+    let crossfading = false;
+    let cleanupTimer = null;
 
-    function loadTrack(i) {
-      audio.src = `assets/audio/${encodeURIComponent(entries[i].file)}`;
+    function activePlayer() { return players[activeIdx]; }
+    function idlePlayer() { return players[1 - activeIdx]; }
+    function activeGain() { return gains[activeIdx]; }
+    function idleGain() { return gains[1 - activeIdx]; }
+    function srcFor(entry) { return `assets/audio/${encodeURIComponent(entry.file)}`; }
+    function targetVolume() { return muted ? 0 : BASE_VOLUME; }
+
+    function loadIntoActive(i) {
+      const p = activePlayer();
+      p.src = srcFor(playlist[i]);
+      p.currentTime = 0;
+      const g = activeGain();
+      g.gain.cancelScheduledValues(audioCtx.currentTime);
+      g.gain.setValueAtTime(targetVolume(), audioCtx.currentTime);
     }
-    loadTrack(index);
+    loadIntoActive(trackIndex);
 
     function play() {
-      const p = audio.play();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const p = activePlayer().play();
       if (p && p.catch) {
         p.catch(() => {
-          // Still blocked — the unlock listeners below will retry on the
-          // next real interaction.
+          // Still blocked — the unlock listener below will retry.
         });
       }
     }
 
     function setPlayIcon() {
-      const playing = !audio.paused;
+      const playing = !activePlayer().paused;
       playBtn.innerHTML = playing ? '&#10074;&#10074;' : '&#9654;';
       playBtn.setAttribute('aria-label', playing ? 'Pause music' : 'Play music');
     }
 
     function setMuteIcon() {
-      muteBtn.innerHTML = audio.muted ? '&#128263;' : '&#128266;';
-      muteBtn.classList.toggle('is-muted', audio.muted);
-      muteBtn.setAttribute('aria-label', audio.muted ? 'Unmute' : 'Mute');
+      muteBtn.innerHTML = muted ? '&#128263;' : '&#128266;';
+      muteBtn.classList.toggle('is-muted', muted);
+      muteBtn.setAttribute('aria-label', muted ? 'Unmute' : 'Mute');
     }
 
-    audio.addEventListener('ended', () => {
-      index = (index + 1) % entries.length;
-      loadTrack(index);
-      play();
+    // Watches the currently-playing track and starts a crossfade once it's
+    // within CROSSFADE_SECONDS of either the 60-second cap or the track's
+    // own natural end, whichever comes first — so short tracks fade out at
+    // their real ending instead of waiting for a cap they'll never reach.
+    function attachProgressWatcher(player) {
+      function onTimeUpdate() {
+        if (crossfading) return;
+        const dur = isFinite(player.duration) && player.duration > 0 ? player.duration : TRACK_CAP_SECONDS;
+        const cap = Math.min(TRACK_CAP_SECONDS, dur);
+        const fade = Math.min(CROSSFADE_SECONDS, cap);
+        const fadeStart = Math.max(0, cap - fade);
+        if (player.currentTime >= fadeStart) {
+          player.removeEventListener('timeupdate', onTimeUpdate);
+          beginCrossfade(fade);
+        }
+      }
+      player.addEventListener('timeupdate', onTimeUpdate);
+      // Safety net only — normally the watcher above triggers the crossfade
+      // well before a track's real end, but if something ever slips past it
+      // (e.g. a track shorter than expected), still advance rather than let
+      // playback just go silent.
+      player.addEventListener('ended', function onEnded() {
+        player.removeEventListener('ended', onEnded);
+        if (!crossfading) beginCrossfade(Math.min(CROSSFADE_SECONDS, 1.5));
+      });
+    }
+
+    // Ramps the outgoing player's gain down to 0 while ramping the incoming
+    // player's gain up to the target volume, both scheduled on the audio
+    // context's own clock. The JS timer at the bottom only handles
+    // bookkeeping (pausing the now-silent outgoing player, swapping which
+    // player is "active") — if that timer runs late because the tab is
+    // backgrounded, the audible fade has already completed correctly
+    // regardless, since the ramp itself doesn't depend on the timer at all.
+    function beginCrossfade(fadeSeconds) {
+      crossfading = true;
+      if (cleanupTimer) { clearTimeout(cleanupTimer); cleanupTimer = null; }
+
+      const outIdx = activeIdx;
+      const inIdx = 1 - activeIdx;
+      const outgoing = players[outIdx];
+      const incoming = players[inIdx];
+      const outGain = gains[outIdx];
+      const inGain = gains[inIdx];
+
+      trackIndex = (trackIndex + 1) % playlist.length; // loops forever by design
+      incoming.src = srcFor(playlist[trackIndex]);
+      incoming.currentTime = 0;
+      const p = incoming.play();
+      if (p && p.catch) p.catch(() => {});
+
+      const now = audioCtx.currentTime;
+      const vol = targetVolume();
+
+      outGain.gain.cancelScheduledValues(now);
+      outGain.gain.setValueAtTime(outGain.gain.value, now);
+      outGain.gain.linearRampToValueAtTime(0, now + fadeSeconds);
+
+      inGain.gain.cancelScheduledValues(now);
+      inGain.gain.setValueAtTime(0, now);
+      inGain.gain.linearRampToValueAtTime(vol, now + fadeSeconds);
+
+      cleanupTimer = setTimeout(() => {
+        cleanupTimer = null;
+        outgoing.pause();
+        outgoing.currentTime = 0;
+        activeIdx = inIdx;
+        crossfading = false;
+        attachProgressWatcher(incoming);
+        setPlayIcon();
+      }, fadeSeconds * 1000 + 100);
+    }
+
+    function pauseBoth() {
+      if (cleanupTimer) { clearTimeout(cleanupTimer); cleanupTimer = null; }
+      crossfading = false;
+      const now = audioCtx.currentTime;
+      gains.forEach((g) => { g.gain.cancelScheduledValues(now); g.gain.setValueAtTime(targetVolume(), now); });
+      players.forEach((p) => p.pause());
+      setPlayIcon();
+    }
+
+    attachProgressWatcher(activePlayer());
+    players.forEach((p) => {
+      p.addEventListener('play', setPlayIcon);
+      p.addEventListener('pause', setPlayIcon);
     });
-    audio.addEventListener('play', setPlayIcon);
-    audio.addEventListener('pause', setPlayIcon);
 
     playBtn.addEventListener('click', () => {
-      if (audio.paused) {
+      if (activePlayer().paused) {
         userPaused = false;
         play();
       } else {
         userPaused = true;
-        audio.pause();
+        pauseBoth();
       }
     });
 
     muteBtn.addEventListener('click', () => {
-      audio.muted = !audio.muted;
+      muted = !muted;
+      const now = audioCtx.currentTime;
+      // Only the currently-audible player needs to move — an idle/inactive
+      // player's gain gets set correctly the next time it's actually used.
+      activeGain().gain.cancelScheduledValues(now);
+      activeGain().gain.setValueAtTime(targetVolume(), now);
       setMuteIcon();
     });
 
@@ -655,7 +783,8 @@ async function loadManifest(folder) {
     let unlocked = false;
     function unlock() {
       if (unlocked || userPaused) return;
-      const p = audio.play();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const p = activePlayer().play();
       if (p && p.then) {
         p.then(() => {
           unlocked = true;
