@@ -3,6 +3,7 @@
    ========================================================================== */
 :root {
   --void: #0b0906;
+  --splash-black: #000000; /* matches the splash video's own background exactly (sampled directly from the file) — kept separate from --void, which has a warm cast, so the letterboxed edges on mobile blend seamlessly instead of showing a seam */
   --ink: #17130e;
   --ink-raised: #1f1a13;
   --gold: #c6a24d;
@@ -227,7 +228,7 @@ h1, h2, h3 {
   position: fixed;
   inset: 0;
   z-index: 300;
-  background: var(--void);
+  background: var(--splash-black);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -252,9 +253,23 @@ h1, h2, h3 {
      bars blend into the matching --void background behind it. */
   .splash-video { object-fit: contain; }
 }
+.splash::after {
+  /* A fixed dark zone behind the button + hint text, independent of
+     whatever the video happens to be showing there — the video's own
+     bright content (frame border, lightning, logo text) shifts position
+     depending on viewport shape, so this can't rely on knowing where it
+     lands; it just keeps the bottom strip readable regardless. */
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 38%;
+  background: linear-gradient(to top, var(--splash-black) 0%, rgba(0, 0, 0, 0.75) 45%, transparent 100%);
+  z-index: 1;
+  pointer-events: none;
+}
 .splash-content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   text-align: center;
   opacity: 0;
   transform: translateY(10px);
