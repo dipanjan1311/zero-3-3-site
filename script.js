@@ -1,31 +1,43 @@
 // ---------------------------------------------------------------------------
-// Splash — the very first thing that runs, before anything else, so the real
-// hero animation gets moved into the splash before the browser paints it in
-// the wrong place. It borrows the actual .hero-anim element for its one-time
-// play (no duplicate animation markup), then hands the same, already-settled
-// element back to the hero once the visitor clicks through — so the main
-// hero never has to replay anything, it just already looks the way it will.
-// Always shows — every load, every refresh — it's the fixed entry point.
+// Splash — the very first thing that runs. Shows a short video with its own
+// sound, muted until the visitor taps (autoplay-with-sound is blocked by
+// every browser without a gesture — same rule as the background music
+// below). Tapping to unmute is deliberately separate from clicking "Enter
+// site", so someone can watch/listen on the splash for as long as they like
+// before actually moving on. Always shows — every load, every refresh.
 // ---------------------------------------------------------------------------
 (function initSplash() {
   const splash = document.getElementById('splash');
   const splashContent = document.getElementById('splashContent');
   const splashEnter = document.getElementById('splashEnter');
-  const heroAnimEl = document.querySelector('.hero-anim');
-  const heroEl = document.querySelector('.hero');
-  if (!splash || !splashContent || !splashEnter || !heroAnimEl || !heroEl) return;
+  const splashVideo = document.getElementById('splashVideo');
+  if (!splash || !splashContent || !splashEnter || !splashVideo) return;
 
   document.documentElement.classList.add('splash-active');
-  splash.insertBefore(heroAnimEl, splashContent);
 
   // Button + microcopy are visible right away — no need to wait for the
-  // animation to finish before someone can enter. The rAF just gives the
+  // video to finish before someone can enter. The rAF just gives the
   // opening fade-in something to transition from.
   requestAnimationFrame(() => splashContent.classList.add('is-ready'));
 
+  // 'click' (not pointerdown/touchend/mousedown) is the one event type
+  // Chrome's own developers recommend for gesture-gated audio, specifically
+  // because which other events count as valid "user activation" isn't
+  // consistent across browsers — this matters most on mobile.
+  let videoSoundUnlocked = false;
+  function unlockVideoSound() {
+    if (videoSoundUnlocked) return;
+    videoSoundUnlocked = true;
+    splashVideo.muted = false;
+    document.removeEventListener('click', unlockVideoSound, true);
+    document.removeEventListener('keydown', unlockVideoSound, true);
+  }
+  document.addEventListener('click', unlockVideoSound, true);
+  document.addEventListener('keydown', unlockVideoSound, true);
+
   splashEnter.addEventListener('click', () => {
     splash.classList.add('is-leaving');
-    heroEl.insertBefore(heroAnimEl, heroEl.firstChild);
+    splashVideo.pause();
     document.documentElement.classList.remove('splash-active');
     document.dispatchEvent(new CustomEvent('hero:enter'));
     setTimeout(() => splash.remove(), 900);
@@ -695,6 +707,7 @@ async function loadManifest(folder) {
     function beginCrossfade(fadeSeconds) {
       crossfading = true;
       if (cleanupTimer) { clearTimeout(cleanupTimer); cleanupTimer = null; }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
 
       const outIdx = activeIdx;
       const inIdx = 1 - activeIdx;
@@ -768,39 +781,51 @@ async function loadManifest(folder) {
 
     // Try immediately in case the browser already trusts this origin
     // (returning visitors — see Chrome's Media Engagement Index), then fall
-    // back to unlocking on the first real interaction.
-    play();
+    // back to unlocking on the first real interaction. If the splash is
+    // showing, none of this starts until 'hero:enter' fires — otherwise the
+    // same tap that unmutes the splash video's own sound would also kick
+    // off background music, and the two would play over each other while
+    // the splash is still up.
+    function activateBackgroundAudio() {
+      play();
 
-    // 'click' is the one event type Chrome's own developers explicitly
-    // recommend for this, specifically because which other events count as
-    // valid "user activation" isn't consistent across browsers/devices —
-    // pointerdown/touchend/mousedown are not guaranteed to qualify the same
-    // way everywhere. 'keydown' is kept alongside it for keyboard users.
-    // Listeners are only removed once a play() attempt actually succeeds —
-    // never optimistically beforehand — so if an earlier, less-reliable
-    // event in the same gesture fails silently, the next real interaction
-    // still gets its own chance rather than finding the listener gone.
-    let unlocked = false;
-    function unlock() {
-      if (unlocked || userPaused) return;
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      const p = activePlayer().play();
-      if (p && p.then) {
-        p.then(() => {
+      // 'click' is the one event type Chrome's own developers explicitly
+      // recommend for this, specifically because which other events count as
+      // valid "user activation" isn't consistent across browsers/devices —
+      // pointerdown/touchend/mousedown are not guaranteed to qualify the same
+      // way everywhere. 'keydown' is kept alongside it for keyboard users.
+      // Listeners are only removed once a play() attempt actually succeeds —
+      // never optimistically beforehand — so if an earlier, less-reliable
+      // event in the same gesture fails silently, the next real interaction
+      // still gets its own chance rather than finding the listener gone.
+      let unlocked = false;
+      function unlock() {
+        if (unlocked || userPaused) return;
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const p = activePlayer().play();
+        if (p && p.then) {
+          p.then(() => {
+            unlocked = true;
+            removeUnlockListeners();
+          }).catch(() => { /* this attempt didn't count — leave listeners active to retry */ });
+        } else {
           unlocked = true;
           removeUnlockListeners();
-        }).catch(() => { /* this attempt didn't count — leave listeners active to retry */ });
-      } else {
-        unlocked = true;
-        removeUnlockListeners();
+        }
       }
+      function removeUnlockListeners() {
+        document.removeEventListener('click', unlock, true);
+        document.removeEventListener('keydown', unlock, true);
+      }
+      document.addEventListener('click', unlock, true);
+      document.addEventListener('keydown', unlock, true);
     }
-    function removeUnlockListeners() {
-      document.removeEventListener('click', unlock, true);
-      document.removeEventListener('keydown', unlock, true);
+
+    if (document.documentElement.classList.contains('splash-active')) {
+      document.addEventListener('hero:enter', activateBackgroundAudio, { once: true });
+    } else {
+      activateBackgroundAudio();
     }
-    document.addEventListener('click', unlock, true);
-    document.addEventListener('keydown', unlock, true);
 
     setPlayIcon();
     setMuteIcon();
