@@ -248,7 +248,7 @@ h1, h2, h3 {
      size that fits both, regardless of viewport shape. Mobile below
      deliberately overrides this back to the original full-bleed treatment
      — that was already confirmed working well and is left alone on purpose. */
-  max-width: min(90vw, 720px);
+  max-width: 90vw;
   max-height: 62vh;
   width: auto;
   height: auto;
