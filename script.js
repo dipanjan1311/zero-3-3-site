@@ -35,6 +35,51 @@
   document.addEventListener('click', unlockVideoSound, true);
   document.addEventListener('keydown', unlockVideoSound, true);
 
+  // Loop the video with a soft 1-second fade out/in at the seam, rather
+  // than an abrupt native loop or letting it just stop on its last frame.
+  // The visual side is a CSS opacity transition (see .is-looping-fade);
+  // the video's own audio is faded in step via a manual volume ramp, since
+  // .volume isn't something CSS can animate. Both run on the same
+  // duration and the same underlying frame clock, so they stay in sync.
+  const LOOP_FADE_MS = 1000;
+  let loopFading = false;
+  let loopFadeRafId = null;
+
+  function rampVideoVolume(target, ms, onDone) {
+    if (loopFadeRafId) cancelAnimationFrame(loopFadeRafId);
+    const start = performance.now();
+    const startVol = splashVideo.volume;
+    function step(now) {
+      const t = Math.min(1, (now - start) / ms);
+      splashVideo.volume = startVol + (target - startVol) * t;
+      if (t < 1) {
+        loopFadeRafId = requestAnimationFrame(step);
+      } else {
+        loopFadeRafId = null;
+        if (onDone) onDone();
+      }
+    }
+    loopFadeRafId = requestAnimationFrame(step);
+  }
+
+  splashVideo.addEventListener('timeupdate', () => {
+    if (loopFading || !isFinite(splashVideo.duration)) return;
+    if (splashVideo.duration - splashVideo.currentTime <= LOOP_FADE_MS / 1000) {
+      loopFading = true;
+      splashVideo.classList.add('is-looping-fade');
+      rampVideoVolume(0, LOOP_FADE_MS);
+    }
+  });
+
+  splashVideo.addEventListener('ended', () => {
+    splashVideo.currentTime = 0;
+    splashVideo.volume = 0;
+    const p = splashVideo.play();
+    if (p && p.catch) p.catch(() => {});
+    requestAnimationFrame(() => splashVideo.classList.remove('is-looping-fade'));
+    rampVideoVolume(1, LOOP_FADE_MS, () => { loopFading = false; });
+  });
+
   splashEnter.addEventListener('click', () => {
     splash.classList.add('is-leaving');
     splashVideo.pause();

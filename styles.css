@@ -232,44 +232,56 @@ h1, h2, h3 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  padding-bottom: clamp(3rem, 10vh, 6rem);
+  justify-content: center;
+  gap: clamp(1.5rem, 4vh, 3rem);
+  padding: var(--edge);
   overflow: hidden;
   transition: transform 0.8s cubic-bezier(0.6, 0, 0.3, 1);
 }
 .splash.is-leaving { transform: translateY(-100%); }
 .splash-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
+  /* Desktop/wide viewports: a normal, contained element — not a full-bleed
+     background — so it and the button/text below it are laid out as two
+     separate, stacked pieces that can never occupy the same space. Never
+     cropped; max-width/max-height together with the browser's own
+     aspect-ratio handling for video/img elements just picks the largest
+     size that fits both, regardless of viewport shape. Mobile below
+     deliberately overrides this back to the original full-bleed treatment
+     — that was already confirmed working well and is left alone on purpose. */
+  max-width: min(90vw, 720px);
+  max-height: 62vh;
+  width: auto;
+  height: auto;
+  opacity: 1;
+  transition: opacity 1s ease;
 }
+.splash-video.is-looping-fade { opacity: 0; }
 @media (max-width: 720px) {
-  /* The video is landscape and the logo text spans most of its width —
-     cropping to fill a tall phone screen cuts the logo off. Showing the
-     whole frame instead (letterboxed) keeps the branding intact; the dark
-     bars blend into the matching --void background behind it. */
-  .splash-video { object-fit: contain; }
-}
-.splash::after {
-  /* A fixed dark zone behind the button + hint text, independent of
-     whatever the video happens to be showing there — the video's own
-     bright content (frame border, lightning, logo text) shifts position
-     depending on viewport shape, so this can't rely on knowing where it
-     lands; it just keeps the bottom strip readable regardless. */
-  content: '';
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 38%;
-  background: linear-gradient(to top, var(--splash-black) 0%, rgba(0, 0, 0, 0.75) 45%, transparent 100%);
-  z-index: 1;
-  pointer-events: none;
+  .splash {
+    justify-content: flex-end;
+    gap: 0;
+    padding: 0 var(--edge) clamp(3rem, 10vh, 6rem);
+  }
+  .splash-video {
+    position: absolute;
+    inset: 0;
+    max-width: none;
+    max-height: none;
+    width: 100%;
+    height: 100%;
+    /* The video is landscape and the logo text spans most of its width —
+       cropping to fill a tall phone screen cuts the logo off. Showing the
+       whole frame instead (letterboxed) keeps the branding intact; the
+       dark bars blend into the matching --splash-black background. */
+    object-fit: contain;
+    z-index: 0;
+  }
+  .splash-content {
+    position: relative;
+    z-index: 1;
+  }
 }
 .splash-content {
-  position: relative;
-  z-index: 2;
   text-align: center;
   opacity: 0;
   transform: translateY(10px);
