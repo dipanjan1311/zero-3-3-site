@@ -249,7 +249,7 @@ h1, h2, h3 {
      deliberately overrides this back to the original full-bleed treatment
      — that was already confirmed working well and is left alone on purpose. */
   max-width: 90vw;
-  max-height: 62vh;
+  max-height: 68vh;
   width: auto;
   height: auto;
   opacity: 1;
