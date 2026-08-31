@@ -405,6 +405,11 @@ async function loadManifest(folder) {
     const showNav = activeEntries.length > 1;
     if (lightboxPrev) lightboxPrev.style.visibility = showNav ? 'visible' : 'hidden';
     if (lightboxNext) lightboxNext.style.visibility = showNav ? 'visible' : 'hidden';
+    // Background music should duck for actual video playback, not for
+    // photos — checking the current item's type on every render (both the
+    // initial open and every prev/next step) means this stays correct as
+    // someone navigates between videos and photos in the same lightbox.
+    document.dispatchEvent(new CustomEvent(entry.type === 'video' ? 'media:videoplay' : 'media:videostop'));
   }
 
   function openLightbox(entries, folder, index, trigger, onClose) {
@@ -422,6 +427,7 @@ async function loadManifest(folder) {
   function closeLightbox() {
     lightbox.classList.remove('open');
     lightboxStage.innerHTML = ''; // stop any playing video
+    document.dispatchEvent(new CustomEvent('media:videostop'));
     if (lastFocusedTile) lastFocusedTile.focus();
     const cb = onLightboxCloseCallback;
     onLightboxCloseCallback = null;
@@ -812,6 +818,26 @@ async function loadManifest(folder) {
         userPaused = true;
         pauseBoth();
       }
+    });
+
+    // Pause automatically whenever a video starts playing anywhere on the
+    // site (Studio, Live, or anywhere else that reuses the same lightbox —
+    // this isn't tied to a specific section, so it covers any future one
+    // too), and resume once it's gone — but only if the pause was caused by
+    // the video in the first place, never overriding a deliberate pause the
+    // visitor already made themselves via the button above.
+    let pausedForVideo = false;
+    document.addEventListener('media:videoplay', () => {
+      if (userPaused || pausedForVideo) return;
+      if (!activePlayer().paused) {
+        pausedForVideo = true;
+        pauseBoth();
+      }
+    });
+    document.addEventListener('media:videostop', () => {
+      if (!pausedForVideo) return;
+      pausedForVideo = false;
+      if (!userPaused) play();
     });
 
     muteBtn.addEventListener('click', () => {
