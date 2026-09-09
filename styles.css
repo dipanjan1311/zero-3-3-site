@@ -1196,7 +1196,12 @@ svg.hero-strike, svg.hero-burst { position:absolute; inset:0; width:100%; height
 }
 .contact-info h2 { font-size: clamp(2rem, 4.5vw, 3rem); margin-top: 0.6rem; }
 .contact-info p { color: var(--bone-dim); margin-top: 1.1rem; max-width: 30rem; }
-.contact-cta { margin-top: 1.8rem; }
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.8rem;
+}
 .contact-links {
   list-style: none;
   padding: 0;
